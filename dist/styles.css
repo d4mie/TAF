@@ -17,20 +17,9 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/* Fade-in animation for dynamically loaded images */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-fade-in {
-  animation-name: fadeIn;
-  animation-duration: 0.5s; /* Adjust duration as needed */
-  animation-fill-mode: forwards; /* Keeps the state of the last keyframe (opacity: 1) */
-}
-
 .category:hover {
   background-color: #e6e6e6;
+  text-decoration: underline;
 }
 
 .category.active {
@@ -46,45 +35,81 @@ body {
   padding: 20px;
 }
 
+/* Fade-in animation for dynamically loaded images */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation-name: fadeIn;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+/* Subcategory styles: horizontal layout with consistent gap on all screens */
+.subcategory-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+.subcategory-container > div,
+.subcategory-container .subcategory {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 1em;
+  min-width: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: text-decoration 0.2s;
+}
+
+.subcategory-container > div:hover,
+.subcategory-container .subcategory:hover {
+  text-decoration: underline;
+}
 
 /* Image container styled as gallery grid */
 #image-container {
-  display: grid; /* Enable grid layout */
-  grid-template-columns: repeat(3, 1fr); /* 3 columns on large screens */
-  gap: 16px; /* Space between grid items */
-  justify-content: center; /* Center items horizontally */
-  align-items: start; /* Align items to the top */
-  width: 100%; /* Ensure container takes full width */
-  max-width: 1200px; /* Optional: Limit the maximum width */
-  margin: 0 auto; /* Center the container horizontally */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  justify-content: center;
+  align-items: start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Responsive adjustments */
 @media (max-width: 1024px) {
   #image-container {
-      grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+      grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   #image-container {
-      grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
+      grid-template-columns: repeat(1, 1fr);
   }
 }
 
-/* Each image container (grid item) */
 #image-container div {
-  width: 100%; /* Should take full width of the grid cell */
+  width: 100%;
   overflow: hidden;
-  border-radius: 0.5rem; /* Rounded corners */
-  aspect-ratio: 1 / 1; /* Enforce a square aspect ratio for the container */
+  border-radius: 0.5rem;
+  aspect-ratio: 1 / 1;
 }
 
-/* Images should fit within their grid cells */
 #image-container img {
   width: 100%;
-  height: 100%; /* Make image fill the parent div which has aspect-ratio */
-  object-fit: cover; /* Ensures images maintain aspect ratio & cover the area */
-  border-radius: 5px; /* Optional: Adds rounded corners */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
