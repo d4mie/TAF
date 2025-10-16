@@ -1,0 +1,36 @@
+{
+  "mappings": {
+    "ASABI - PILOT": { "displayName": "ASABI - PILOT", "category": "brandcampaignshoot" },
+    "ASABI - SEQUEL": { "displayName": "ASABI - SEQUEL", "category": "brandcampaignshoot" },
+    "COZY": { "displayName": "COZY", "category": "brandcampaignshoot" },
+    "MINX": { "displayName": "MINX", "category": "brandcampaignshoot" },
+    "MOHA": { "displayName": "MOHA", "category": "brandcampaignshoot" },
+    "QUAINT - OUTLANDISH": { "displayName": "QUAINT - OUTLANDISH", "category": "brandcampaignshoot" },
+    "STOMFIT - EMINENCE": { "displayName": "STOMFIT - EMINENCE", "category": "brandcampaignshoot" },
+    "STOMFIT - SERENE DAYS": { "displayName": "STOMFIT - SERENE DAYS", "category": "brandcampaignshoot" },
+    "STOMFIT FASHION CAMPAIGN 2": { "displayName": "STOMFIT FASHION CAMPAIGN 2", "category": "brandcampaignshoot" },
+    "UNICBROEK": { "displayName": "UNICBROEK", "category": "brandcampaignshoot" },
+    "WBF": { "displayName": "WBF", "category": "brandcampaignshoot" },
+    "XPLORE": { "displayName": "XPLORE", "category": "brandcampaignshoot" },
+
+    "INTRO": { "displayName": "INTRO", "category": "bts" },
+    "stomfit serene days - BTS": { "displayName": "STOMFIT SERENE DAYS - BTS", "category": "bts" },
+
+    "ACTIVEYARD": { "displayName": "ACTIVEYARD", "category": "event" },
+    "ALTE51": { "displayName": "ALTE51", "category": "event" },
+    "STREET SOUK 23'": { "displayName": "STREET SOUK 23’", "category": "event" },
+    "STREET SOUK 24": { "displayName": "STREET SOUK 24’", "category": "event" },
+
+    "BUJU": { "displayName": "BUJU", "category": "lifestyle" },
+    "GUNNA": { "displayName": "GUNNA", "category": "lifestyle" },
+    "YHEMOLEE": { "displayName": "YHEMOLEE", "category": "lifestyle" },
+
+    "AVL": { "displayName": "AVL", "category": "portrait" },
+    "FISOLA": { "displayName": "FISOLA", "category": "portrait" },
+    "RUBY": { "displayName": "RUBY", "category": "portrait" },
+    "TIMI": { "displayName": "TIMI", "category": "portrait" },
+    "TINMEYIN": { "displayName": "TINMEYIN", "category": "portrait" }
+  },
+  "categoriesOrder": ["brandcampaignshoot", "bts", "event", "lifestyle", "portrait"]
+}
+
