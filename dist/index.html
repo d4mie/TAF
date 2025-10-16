@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TAF - Portfolio</title>
+  <title>theayofolahan - Home</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="circle favicon.ico" />
@@ -18,16 +18,8 @@
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
  <link rel="preconnect" href="https://fonts.googleapis.com/" />
  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
  <!-- End - Fonts -->
-
- <!-- Start - Fancybox Scripts -->
- <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
- <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-   integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
- <!-- End - Fancybox Scripts -->
-
- <script src="categories.js"></script>
 </head>
 
 <body
@@ -64,8 +56,13 @@
           <ul id="ulMenu"
             class="flex flex-col duration-300 ease-out md:space-x-5 sm:transition-none mt-5 md:flex-row md:items-center md:ml-auto md:mt-0 md:pt-0 md:border-0">
             <li class="group transition duration-300">
-              <a href="index.html" class="font-signika text-2xl tap-highlight-transparent">PORTFOLIO
+              <a href="index.html" class="font-signika text-2xl tap-highlight-transparent">HOME
                 <span class="hidden md:block h-0.5 bg-black dark:bg-white"></span>
+              </a>
+            </li>
+            <li class="group transition duration-300">
+              <a href="portfolio.html" class="font-signika text-2xl tap-highlight-transparent">PORTFOLIO
+                <span class="hidden md:block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
               </a>
             </li>
             <li class="group transition duration-300">
@@ -88,229 +85,123 @@
 
   <!-- Content -->
   <div class="container mx-auto">
-    <h1 class="text-4xl pt-10 pb-8 font-bold">PORTFOLIO</h1>
-
-    <!-- New Categories Section -->
-    <section class="categories pb-8">
-      <div class="flex flex-wrap">
-        <a href="#" id="category-brandcampaignshoot" class="category-card p-4 text-center flex-1 mr-4 group transition duration-300">
-          <h3 class="text-xl font-medium">BRAND CAMPAIGN SHOOT</h3>
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
-        </a>
-        <a href="#" id="category-bts" class="category-card p-4 text-center flex-1 mr-4 group transition duration-300">
-          <h3 class="text-xl font-medium">BTS</h3>
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
-        </a>
-        <a href="#" id="category-event" class="category-card p-4 text-center flex-1 mr-4 group transition duration-300">
-          <h3 class="text-xl font-medium">EVENT</h3>
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
-        </a>
-        <a href="#" id="category-lifestyle" class="category-card p-4 text-center flex-1 mr-4 group transition duration-300">
-          <h3 class="text-xl font-medium">LIFESTYLE</h3>
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
-        </a>
-        <a href="#" id="category-portrait" class="category-card p-4 text-center flex-1 mr-4 group transition duration-300">
-          <h3 class="text-xl font-medium">PORTRAIT</h3>
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
-        </a>
-      </div>
-    </section>
-
-    <div id="subcategories-container" class="subcategory-container"></div>
-
-    <section class="text-neutral-700">
-      <div class="container w-full">
-        <!-- All images are now in a single flex flex-wrap container -->
-        <div class="flex flex-wrap" id="image-container">
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/ykb10.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00001"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/ykb10.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ALTE51/s15.JPG"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00002"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ALTE51/s15.JPG" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju3.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00003"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju3.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/FISOLA/fisola4.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00004"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/FISOLA/fisola4.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/INTRO/intro1bw.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00005"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/INTRO/intro1bw.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/QUAINT%20-%20OUTLANDISH/quaint3.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00006"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/QUAINT%20-%20OUTLANDISH/quaint3.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20-%20EMINENCE/stomfitmj13.JPG"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00007"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20-%20EMINENCE/stomfitmj13.JPG" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20FASHION%20CAMPAIGN%202/stomfit6.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00008"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20FASHION%20CAMPAIGN%202/stomfit6.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/stomfit%20serene%20days%20-%20BTS/btss-13.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00009"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/stomfit%20serene%20days%20-%20BTS/btss-13.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20-%20SERENE%20DAYS/s4.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00010"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20-%20SERENE%20DAYS/s4.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STREET%20SOUK%2023%E2%80%99/ss44.JPG"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00011"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STREET%20SOUK%2023%E2%80%99/ss44.JPG" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/YHEMOLEE/YLrare8%202.JPG"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00012"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/YHEMOLEE/YLrare8%202.JPG" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/lumi3.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00013"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/lumi3.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju5.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00014"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju5.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/GUNNA/DSC06404.jpg"
-                data-fancybox="gallery">
-                <img alt="portfolio-image00015"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/GUNNA/DSC06404.jpg" />
-              </a>
-            </div>
-          </div>
-          <div class="w-full p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/TINMEYIN/mey10.jpg"
-                data-fancybox="gallery">
-                <img
-                  alt="portfolio-image00016"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/TINMEYIN/mey10.jpg" />
-              </a>
-            </div>
-          </div>
-          <!-- Added image 17 -->
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/AVL/avl11.jpg"
-                data-fancybox="gallery">
-                <img
-                  alt="portfolio-image00017"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/AVL/avl11.jpg" />
-              </a>
-            </div>
-          </div>
-          <!-- Added image 18 -->
-          <div class="w-full md:w-1/2 p-1">
-            <div class="overflow-hidden h-full w-full">
-              <a href="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ASABI%20-%20SEQUEL/asabi13.jpg"
-                data-fancybox="gallery">
-                <img
-                  alt="portfolio-image00018"
-                  class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                  src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ASABI%20-%20SEQUEL/asabi13.jpg" />
-              </a>
-            </div>
+    <div class="grid grid-cols-2 gap-14 md:gap-20">
+      <div class="col-span-2 md:col-span-1">
+        <div
+          class="bg-white dark:bg-neutral-900 p-5 pb-28 m-6 md:m-12 shadow-lg border border-gray-100 dark:border-neutral-800 hover:rotate-0 transition duration-500 -rotate-6 relative">
+          <img src="TAF.jpg" alt="Avatar"
+            class="smooth-edges flex flex-col w-full aspect-square object-cover h-auto" />
+          <div class="absolute bottom-0 left-0 right-0 text-center">
+            <p class="text-gray-800 dark:text-slate-200 pb-7 h-full text-6xl font-nothingyoucoulddo">me</p>
           </div>
         </div>
-        <!-- END UPDATED IMAGE GRID -->
+
       </div>
-    </section>
+      <section class="font-normal text-center text-base md:text-start mx-3 col-span-2 md:col-span-1 my-auto">
+        <div class="block md:hidden">
+          <p class="text-3xl font-serif font-bold mb-1">Hello there,</p>
+          <p class="text-3xl font-serif font-bold mb-6">I'm Fola <span class="animate-wave">👋</span></p>
+        </div>
+        <p class="hidden md:block text-3xl font-serif font-bold mb-6">Hello there, I'm Fola
+          <span class="animate-wave">👋</span>
+        </p>
+        <p class="mb-4">
+          I'm Fola, a Lagos-based photographer with over six years of experience
+          in capturing unforgettable moments. I specialize in portrait photography,
+          enhancing natural beauty with a signature style that blends vibrant colors,
+          bold compositions, and emotionally compelling imagery.
+        </p>
+        <p class="mb-4">
+          Beyond photography, I love exploring Lagos' diverse neighborhoods,
+          discovering new restaurants, and spending quality time with family and friends.
+          I believe every moment is an opportunity to experience something
+          new and create lasting memories.
+        </p>
+        <p>
+          Thank you for taking the time to learn a little about me and my work.
+          If you're interested in collaborating or viewing more of my portfolio,
+          feel free to reach out. Let's bring your vision to life!
+        </p>
+      </section>
+    </div>
+
+    <!-- Two-column image grid -->
+    <div class="mt-20 mb-10">
+      <h2 class="text-3xl md:text-4xl font-nothingyoucoulddo text-center mb-12">Featured Work</h2>
+      <div class="grid grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <!-- Row 1 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/ykb10.jpg" 
+               alt="Brand Campaign Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STREET%20SOUK%2023%E2%80%99/ss44.JPG" 
+               alt="Event Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        
+        <!-- Row 2 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju3.jpg" 
+               alt="Portrait Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/stomfit%20serene%20days%20-%20BTS/btss-13.jpg" 
+               alt="Behind the Scenes" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        
+        <!-- Row 3 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20-%20EMINENCE/stomfitmj13.JPG" 
+               alt="Fashion Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/FISOLA/fisola4.jpg" 
+               alt="Lifestyle Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        
+        <!-- Row 4 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/lumi3.jpg" 
+               alt="Brand Campaign Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju5.jpg" 
+               alt="Portrait Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        
+        <!-- Row 5 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STOMFIT%20FASHION%20CAMPAIGN%202/stomfit6.jpg" 
+               alt="Fashion Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/GUNNA/DSC06404.jpg" 
+               alt="Portrait Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        
+        <!-- Row 6 -->
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/YHEMOLEE/YLrare8%202.JPG" 
+               alt="Portrait Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+          <img src="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/TINMEYIN/mey10.jpg" 
+               alt="Portrait Photography" 
+               class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+        </div>
+      </div>
+    </div>
   </div>
 
    <!-- Footer -->
@@ -375,10 +266,6 @@
       </p>
     </div>
   </footer>
-  <!-- Script for the LightBox -->
-  <script>
-    Fancybox.bind("[data-fancybox]", {});
-  </script>
   <script src="fade_in.js"></script>
   <script src="menu.js"></script>
 </body>

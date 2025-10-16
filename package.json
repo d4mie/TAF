@@ -13,7 +13,8 @@
     "tailwindcss": "^3.2.7"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.787.0",
+    "@aws-sdk/client-s3": "^3.896.0",
+    "@aws-sdk/s3-request-presigner": "^3.896.0",
     "dotenv": "^16.5.0"
   }
 }
