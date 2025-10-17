@@ -1,6 +1,13 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("Categories.js loaded successfully");
+  
   const subcategoriesContainer = document.getElementById("subcategories-container");
   const imagesContainer = document.getElementById("image-container");
+  
+  console.log("Containers found:", {
+    subcategoriesContainer: !!subcategoriesContainer,
+    imagesContainer: !!imagesContainer
+  });
 
   function encodePathSegment(segment) {
     return encodeURIComponent(segment).replace(/%2F/g, "/");
@@ -9,9 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load mapping data
   let mappingData;
   try {
+    console.log("Loading portfolio-mapping.json...");
     const res = await fetch("portfolio-mapping.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`Failed to load portfolio-mapping.json: ${res.status}`);
     mappingData = await res.json();
+    console.log("Mapping data loaded successfully:", mappingData);
   } catch (err) {
     console.error("Failed to load portfolio mapping data:", err);
     return;
@@ -52,7 +61,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Wire up category cards
-  document.querySelectorAll(".category-card").forEach((card) => {
+  console.log("Setting up category click handlers...");
+  const categoryCards = document.querySelectorAll(".category-card");
+  console.log("Found category cards:", categoryCards.length);
+  
+  categoryCards.forEach((card, index) => {
+    console.log(`Setting up card ${index}:`, card.id);
     card.addEventListener("click", (event) => {
       event.preventDefault();
       const categoryId = event.currentTarget.id.replace("category-", "");
@@ -75,13 +89,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Create a wrapper div for better styling
       const subcatsWrapper = document.createElement("div");
-      subcatsWrapper.className = "flex flex-wrap gap-3 justify-center";
+      subcatsWrapper.className = "flex flex-wrap";
 
       subcats.forEach((displayName) => {
         const subcategoryLink = document.createElement("a");
-        subcategoryLink.className = "subcategory inline-block px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200 cursor-pointer";
+        subcategoryLink.className = "category-card p-4 text-center flex-1 mr-4 group transition duration-300";
         subcategoryLink.href = "#";
-        subcategoryLink.textContent = displayName;
+        
+        // Create the same structure as category cards
+        subcategoryLink.innerHTML = `
+          <h3 class="text-xl font-medium">${displayName}</h3>
+          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
+        `;
 
         subcategoryLink.addEventListener("click", (e) => {
           e.preventDefault();
@@ -108,21 +127,56 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // For now, show a message that images will be loaded from the folder
-    // In a real implementation, you would fetch the actual image list from R2
-    const message = document.createElement("div");
-    message.className = "text-center py-8";
-    message.innerHTML = `
-      <h3 class="text-xl font-medium mb-4">${folderName}</h3>
-      <p class="text-gray-600 dark:text-gray-400 mb-4">
-        Images from this folder will be displayed here.
-      </p>
-      <p class="text-sm text-gray-500">
-        Folder: ${folderName}<br>
-        URL: https://theayofolahan.com/${encodePathSegment(folderName)}/
-      </p>
+    // Create a loading message
+    const loadingMessage = document.createElement("div");
+    loadingMessage.className = "text-center py-8";
+    loadingMessage.innerHTML = `
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading images from ${folderName}...</p>
     `;
-    imagesContainer.appendChild(message);
+    imagesContainer.appendChild(loadingMessage);
+
+    // Simulate loading images (in a real implementation, you'd fetch from R2 API)
+    setTimeout(() => {
+      // Create sample images for demonstration
+      const sampleImages = [
+        'image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg',
+        'image5.jpg', 'image6.jpg', 'image7.jpg', 'image8.jpg'
+      ];
+
+      imagesContainer.innerHTML = "";
+
+      sampleImages.forEach((imageName, index) => {
+        const encodedFolderName = encodePathSegment(folderName);
+        const encodedImageName = encodePathSegment(imageName);
+        const imageSrc = `https://theayofolahan.com/${encodedFolderName}/${encodedImageName}`;
+        
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "w-full md:w-1/2 p-1";
+        
+        imageWrapper.innerHTML = `
+          <div class="overflow-hidden h-full w-full">
+            <a href="${imageSrc}" data-fancybox="gallery">
+              <img
+                alt="gallery-image-${encodedImageName}"
+                class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
+                src="${imageSrc}" 
+                loading="lazy" 
+                decoding="async" />
+            </a>
+          </div>
+        `;
+        
+        imagesContainer.appendChild(imageWrapper);
+      });
+
+      // Re-initialize Fancybox for the new images
+      if (typeof Fancybox !== 'undefined') {
+        Fancybox.bind("[data-fancybox]", {
+          // Fancybox options
+        });
+      }
+    }, 1000); // 1 second delay to show loading
   }
 
   // Initialize Fancybox for any existing images

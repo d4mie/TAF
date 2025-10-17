@@ -24,7 +24,7 @@ class ImageOptimizer {
     this.setupLazyLoading();
   }
 
-  // Convert old R2 URLs to custom domain URLs
+  // Convert old R2 URLs to custom domain URLs with fallback
   convertToCustomDomain(url) {
     if (url.includes('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')) {
       const path = url.split('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')[1];
@@ -33,9 +33,24 @@ class ImageOptimizer {
     return url;
   }
 
+  // Test if custom domain is working
+  async testCustomDomain() {
+    const testUrl = 'https://theayofolahan.com/ACTIVEYARD/ykb10.jpg';
+    try {
+      const response = await fetch(testUrl, { method: 'HEAD' });
+      return response.ok;
+    } catch (error) {
+      console.warn('Custom domain test failed:', error);
+      return false;
+    }
+  }
+
   // Optimize existing images on page load
-  optimizeExistingImages() {
+  async optimizeExistingImages() {
     const images = document.querySelectorAll('img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]');
+    
+    // Use custom domain directly since it's now configured
+    console.log('Using custom domain: theayofolahan.com');
     
     images.forEach(img => {
       const originalSrc = img.src;
@@ -45,13 +60,18 @@ class ImageOptimizer {
       img.setAttribute('loading', 'lazy');
       img.setAttribute('decoding', 'async');
       
-      // Update src to custom domain
+      // Update src to custom domain or keep original
       img.src = optimizedSrc;
       
-      // Add error handling
+      // Add error handling with fallback
       img.addEventListener('error', () => {
-        console.warn('Failed to load optimized image, falling back to original:', originalSrc);
-        img.src = originalSrc;
+        console.warn('Failed to load image, trying fallback:', originalSrc);
+        if (img.src !== originalSrc) {
+          img.src = originalSrc;
+        } else {
+          // If both fail, show placeholder
+          img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+        }
       });
 
       // Add fade-in effect

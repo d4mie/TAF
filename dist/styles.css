@@ -68,6 +68,20 @@ body {
   text-decoration: none;
 }
 
+/* New subcategory link styles */
+.subcategory-link {
+  display: inline-block;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.subcategory-link:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
 .subcategory-container {
   margin: 20px 0;
   padding: 0;
@@ -80,8 +94,20 @@ body {
 }
 
 .category-card {
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.3s ease;
+  pointer-events: auto !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Ensure category cards are clickable */
+.category-card * {
+  pointer-events: none;
+}
+
+.category-card {
+  pointer-events: auto !important;
 }
 .subcategory-container {
   display: flex;

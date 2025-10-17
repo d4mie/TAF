@@ -10,8 +10,8 @@ const r2Config = {
   accessKeyId: process.env.R2_ACCESS_KEY_ID,
   secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   bucketName: process.env.R2_BUCKET_NAME,
-  customDomain: process.env.R2_CUSTOM_DOMAIN || 'theayofolahan.com',
-  publicUrl: process.env.R2_PUBLIC_URL || 'https://theayofolahan.com'
+  customDomain: 'theayofolahan.com',
+  publicUrl: 'https://theayofolahan.com'
 };
 
 // Initialize S3 client for R2
