@@ -12,14 +12,19 @@
     "UNICBROEK": { "displayName": "UNICBROEK", "category": "brandcampaignshoot" },
     "WBF": { "displayName": "WBF", "category": "brandcampaignshoot" },
     "XPLORE": { "displayName": "XPLORE", "category": "brandcampaignshoot" },
+    "Saint Retro campaign": { "displayName": "Saint Retro Campaign", "category": "brandcampaignshoot" },
+    "MOHA X BOMA Campaign": { "displayName": "MOHA X BOMA Campaign", "category": "brandcampaignshoot" },
+    "YLN campaign": { "displayName": "YLN Campaign", "category": "brandcampaignshoot" },
+    "crazies campaign": { "displayName": "Crazies Campaign", "category": "brandcampaignshoot" },
 
     "INTRO": { "displayName": "INTRO", "category": "bts" },
     "stomfit serene days - BTS": { "displayName": "STOMFIT SERENE DAYS - BTS", "category": "bts" },
 
     "ACTIVEYARD": { "displayName": "ACTIVEYARD", "category": "event" },
     "ALTE51": { "displayName": "ALTE51", "category": "event" },
-    "STREET SOUK 23'": { "displayName": "STREET SOUK 23’", "category": "event" },
-    "STREET SOUK 24": { "displayName": "STREET SOUK 24’", "category": "event" },
+    "STREET SOUK 23'": { "displayName": "STREET SOUK 23'", "category": "event" },
+    "STREET SOUK 24": { "displayName": "STREET SOUK 24'", "category": "event" },
+    "Madame Kanyin Red Carpet": { "displayName": "Madame Kanyin Red Carpet", "category": "event" },
 
     "BUJU": { "displayName": "BUJU", "category": "lifestyle" },
     "GUNNA": { "displayName": "GUNNA", "category": "lifestyle" },
@@ -29,7 +34,8 @@
     "FISOLA": { "displayName": "FISOLA", "category": "portrait" },
     "RUBY": { "displayName": "RUBY", "category": "portrait" },
     "TIMI": { "displayName": "TIMI", "category": "portrait" },
-    "TINMEYIN": { "displayName": "TINMEYIN", "category": "portrait" }
+    "TINMEYIN": { "displayName": "TINMEYIN", "category": "portrait" },
+    "tbfi edits": { "displayName": "TBFI Edits", "category": "portrait" }
   },
   "categoriesOrder": ["brandcampaignshoot", "bts", "event", "lifestyle", "portrait"]
 }

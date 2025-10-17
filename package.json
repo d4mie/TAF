@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tailwindcss -c ./tailwind.config.js -i ./src/input.css -o ./dist/output.css --minify",
-    "generate:portfolio": "node ./scripts/generate-portfolio-index.js"
+    "generate:portfolio": "node ./scripts/generate-portfolio-index.js",
+    "upload:image": "node ./scripts/upload-to-r2.js",
+    "optimize:images": "node ./scripts/optimize-existing-images.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.896.0",
     "@aws-sdk/s3-request-presigner": "^3.896.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "sharp": "^0.33.0"
   }
 }

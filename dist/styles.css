@@ -48,6 +48,41 @@ body {
 }
 
 /* Subcategory styles: horizontal layout with consistent gap on all screens */
+.subcategory {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 4px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #495057;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.subcategory:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+  color: #212529;
+  text-decoration: none;
+}
+
+.subcategory-container {
+  margin: 20px 0;
+  padding: 0;
+}
+
+/* Category card hover effects */
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.category-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 .subcategory-container {
   display: flex;
   flex-wrap: wrap;

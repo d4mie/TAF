@@ -5,33 +5,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   function encodePathSegment(segment) {
     return encodeURIComponent(segment).replace(/%2F/g, "/");
   }
-  function ensureTrailingSlash(s) {
-    return s.endsWith("/") ? s : s + "/";
-  }
-  async function loadJSON(url) {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to load ${url}: ${res.status}`);
-    return res.json();
-  }
 
-  let indexData;
+  // Load mapping data
   let mappingData;
   try {
-    [indexData, mappingData] = await Promise.all([
-      loadJSON("portfolio-index.json"),
-      loadJSON("portfolio-mapping.json"),
-    ]);
+    const res = await fetch("portfolio-mapping.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to load portfolio-mapping.json: ${res.status}`);
+    mappingData = await res.json();
   } catch (err) {
-    console.error("Failed to load portfolio data:", err);
-    return; // Keep the static grid as fallback
+    console.error("Failed to load portfolio mapping data:", err);
+    return;
   }
 
-  const bucketBaseURL = ensureTrailingSlash(indexData.bucketBaseURL || "");
-  const foldersIndex = indexData.folders || {};
   const mappings = (mappingData && mappingData.mappings) || {};
   const categoriesOrder = (mappingData && mappingData.categoriesOrder) || [
     "brandcampaignshoot",
-    "bts",
+    "bts", 
     "event",
     "lifestyle",
     "portrait",
@@ -42,29 +31,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const folderByDisplayName = {};
   for (const cat of categoriesOrder) subcategoriesByCategory[cat] = [];
 
-  const knownFolders = new Set();
-  // Use explicit mappings first (curated display names and categories)
+  // Use explicit mappings
+  console.log("Loaded mappings:", mappings);
   for (const [folderName, def] of Object.entries(mappings)) {
     const displayName = def.displayName || folderName;
     const category = def.category || categoriesOrder[0];
-    if (!foldersIndex[folderName]) continue; // skip if folder not present in index
-    const targetCategory = categoriesOrder.includes(category)
-      ? category
-      : categoriesOrder[0];
+    const targetCategory = categoriesOrder.includes(category) ? category : categoriesOrder[0];
 
     subcategoriesByCategory[targetCategory].push(displayName);
     folderByDisplayName[displayName] = folderName;
-    knownFolders.add(folderName);
   }
-
-  // Auto-include any folders not in mapping (so new folders appear automatically)
-  const defaultCategory = categoriesOrder[0];
-  for (const folderName of Object.keys(foldersIndex)) {
-    if (knownFolders.has(folderName)) continue;
-    const displayName = folderName; // basic default; can be curated later via mapping
-    subcategoriesByCategory[defaultCategory].push(displayName);
-    folderByDisplayName[displayName] = folderName;
-  }
+  
+  console.log("Built subcategories:", subcategoriesByCategory);
 
   // Sort subcategories alphabetically for each category
   for (const cat of Object.keys(subcategoriesByCategory)) {
@@ -76,67 +54,81 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Wire up category cards
   document.querySelectorAll(".category-card").forEach((card) => {
     card.addEventListener("click", (event) => {
+      event.preventDefault();
       const categoryId = event.currentTarget.id.replace("category-", "");
+      
+      console.log("Category clicked:", categoryId);
+      console.log("Available subcategories:", subcategoriesByCategory[categoryId]);
 
       // Clear previous subcategories
       subcategoriesContainer.innerHTML = "";
 
       // Display subcategories for the clicked category
       const subcats = subcategoriesByCategory[categoryId] || [];
+      if (subcats.length === 0) {
+        const noSubcatsMessage = document.createElement("p");
+        noSubcatsMessage.textContent = "No subcategories available for this category";
+        noSubcatsMessage.className = "text-center text-gray-500 py-4";
+        subcategoriesContainer.appendChild(noSubcatsMessage);
+        return;
+      }
+
+      // Create a wrapper div for better styling
+      const subcatsWrapper = document.createElement("div");
+      subcatsWrapper.className = "flex flex-wrap gap-3 justify-center";
+
       subcats.forEach((displayName) => {
-          const subcategoryLink = document.createElement("a");
-          subcategoryLink.className = "subcategory";
+        const subcategoryLink = document.createElement("a");
+        subcategoryLink.className = "subcategory inline-block px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200 cursor-pointer";
         subcategoryLink.href = "#";
         subcategoryLink.textContent = displayName;
 
         subcategoryLink.addEventListener("click", (e) => {
-            e.preventDefault();
+          e.preventDefault();
           const folderName = folderByDisplayName[displayName];
+          console.log("Subcategory clicked:", displayName, "Folder:", folderName);
           renderGallery(folderName);
         });
 
-        subcategoriesContainer.appendChild(subcategoryLink);
+        subcatsWrapper.appendChild(subcategoryLink);
       });
+
+      subcategoriesContainer.appendChild(subcatsWrapper);
     });
   });
 
   function renderGallery(folderName) {
-            imagesContainer.innerHTML = ""; // Clear previous gallery
+    imagesContainer.innerHTML = ""; // Clear previous gallery
 
     if (!folderName) {
-              const noFolderMessage = document.createElement("p");
+      const noFolderMessage = document.createElement("p");
       noFolderMessage.textContent = "No folder mapped for this subcategory";
-              noFolderMessage.className = "text-center text-red-500";
-              imagesContainer.appendChild(noFolderMessage);
-              return;
-            }
-
-    const imageList = foldersIndex[folderName];
-    if (!Array.isArray(imageList) || imageList.length === 0) {
-      const noImagesMessage = document.createElement("p");
-      noImagesMessage.textContent = `No images found for folder "${folderName}"`;
-      noImagesMessage.className = "text-center text-gray-500";
-      imagesContainer.appendChild(noImagesMessage);
+      noFolderMessage.className = "text-center text-red-500 py-8";
+      imagesContainer.appendChild(noFolderMessage);
       return;
     }
 
-    const encodedFolderName = encodePathSegment(folderName);
-              imageList.forEach((imageName) => {
-      const encodedImageName = encodePathSegment(imageName);
-      const imageSrc = `${bucketBaseURL}${encodedFolderName}/${encodedImageName}`;
-                
-                const imageWrapper = document.createElement("div");
-      imageWrapper.innerHTML = `
-                  <div class="overflow-hidden h-full w-full">
-                    <a href="${imageSrc}" data-fancybox="gallery">
-                      <img
-                        alt="gallery-image-${encodedImageName}"
-                        class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                        src="${imageSrc}" />
-                    </a>
-                  </div>
-                `;
-                imagesContainer.appendChild(imageWrapper);
-              });
+    // For now, show a message that images will be loaded from the folder
+    // In a real implementation, you would fetch the actual image list from R2
+    const message = document.createElement("div");
+    message.className = "text-center py-8";
+    message.innerHTML = `
+      <h3 class="text-xl font-medium mb-4">${folderName}</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        Images from this folder will be displayed here.
+      </p>
+      <p class="text-sm text-gray-500">
+        Folder: ${folderName}<br>
+        URL: https://theayofolahan.com/${encodePathSegment(folderName)}/
+      </p>
+    `;
+    imagesContainer.appendChild(message);
+  }
+
+  // Initialize Fancybox for any existing images
+  if (typeof Fancybox !== 'undefined') {
+    Fancybox.bind("[data-fancybox]", {
+      // Fancybox options
+    });
   }
 });
