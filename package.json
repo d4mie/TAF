@@ -8,7 +8,8 @@
     "build": "tailwindcss -c ./tailwind.config.js -i ./src/input.css -o ./dist/output.css --minify",
     "generate:portfolio": "node ./scripts/generate-portfolio-index.js",
     "upload:image": "node ./scripts/upload-to-r2.js",
-    "optimize:images": "node ./scripts/optimize-existing-images.js"
+    "optimize:images": "node ./scripts/optimize-existing-images.js",
+    "deploy:r2": "node ./scripts/deploy-to-r2.js"
   },
   "author": "",
   "license": "ISC",
