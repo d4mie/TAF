@@ -33,15 +33,15 @@ const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 const OUTPUT_FILE = path.resolve(__dirname, "../dist/portfolio-index.json");
 
 async function main() {
-  const bucket = process.env.R2_BUCKET;
+  const bucket = process.env.R2_BUCKET || process.env.R2_BUCKET_NAME;
   const accountId = process.env.R2_ACCOUNT_ID;
   const endpoint = process.env.R2_ENDPOINT || (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : undefined);
   const accessKeyId = process.env.R2_ACCESS_KEY_ID;
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  const bucketBaseURL = process.env.R2_PUBLIC_BASE_URL || "https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/";
+  const bucketBaseURL = process.env.R2_PUBLIC_BASE_URL || "https://theayofolahan.com/";
 
   if (!bucket) {
-    console.error("R2_BUCKET is required");
+    console.error("R2_BUCKET (or R2_BUCKET_NAME) is required");
     process.exit(1);
   }
   if (!accessKeyId || !secretAccessKey) {
@@ -52,6 +52,7 @@ async function main() {
   const s3 = new S3Client({
     region: "auto",
     endpoint,
+    forcePathStyle: false,
     credentials: { accessKeyId, secretAccessKey },
   });
 

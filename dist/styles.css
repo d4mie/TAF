@@ -65,7 +65,7 @@ body {
   background-color: #e9ecef;
   border-color: #adb5bd;
   color: #212529;
-  text-decoration: none;
+  text-decoration: none !important; /* ensure no underline even if Tailwind base applies */
 }
 
 /* New subcategory link styles */
@@ -128,12 +128,23 @@ body {
   min-width: 0;
   text-align: left;
   cursor: pointer;
-  transition: text-decoration 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.subcategory-container > div:hover,
-.subcategory-container .subcategory:hover {
-  text-decoration: underline;
+.subcategory-container a {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+/* Individual subcategory underline on hover only */
+.subcategory-link {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.subcategory-link:hover {
+  text-decoration: none;
+  border-bottom: none;
 }
 
 /* Image container styled as gallery grid */
@@ -173,4 +184,13 @@ body {
   object-fit: cover;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure no underline anywhere inside subcategories container */
+#subcategories-container,
+#subcategories-container *,
+.subcategory-container,
+.subcategory-container * {
+  text-decoration: none !important;
+  border-bottom: 0 !important;
 }

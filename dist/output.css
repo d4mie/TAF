@@ -1366,9 +1366,9 @@ video {
   gap: 10px !important; /* Add spacing between items */
 }
 
-/* Hover effect: underline */
+/* Hover effect removed for subcategories */
 .subcategory:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* Subcategory styles */
