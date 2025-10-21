@@ -2,17 +2,46 @@
 const { S3Client } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Load environment variables from project root reliably, even when this file is required from subfolders
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 // R2 Configuration
 const r2Config = {
-  accountId: process.env.R2_ACCOUNT_ID,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  bucketName: process.env.R2_BUCKET_NAME,
-  customDomain: 'theayofolahan.com',
-  publicUrl: 'https://theayofolahan.com'
+  // Allow a few alternate env names for convenience
+  accountId: process.env.R2_ACCOUNT_ID || process.env.CF_R2_ACCOUNT_ID,
+  accessKeyId: process.env.R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || process.env.CF_R2_ACCESS_KEY_ID,
+  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || process.env.CF_R2_SECRET_ACCESS_KEY,
+  bucketName: process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || process.env.CF_R2_BUCKET_NAME || process.env.AWS_S3_BUCKET || process.env.BUCKET_NAME,
+  customDomain: process.env.R2_CUSTOM_DOMAIN || 'theayofolahan.com',
+  publicUrl: process.env.R2_PUBLIC_URL || 'https://theayofolahan.com'
 };
+
+// Validate required configuration up front for clearer errors
+const missingKeys = ['accountId', 'accessKeyId', 'secretAccessKey', 'bucketName']
+  .filter((key) => !r2Config[key] || String(r2Config[key]).trim() === '');
+
+if (missingKeys.length > 0) {
+  const prettyList = missingKeys
+    .map((k) => {
+      switch (k) {
+        case 'accountId': return 'R2_ACCOUNT_ID';
+        case 'accessKeyId': return 'R2_ACCESS_KEY_ID (or AWS_ACCESS_KEY_ID)';
+        case 'secretAccessKey': return 'R2_SECRET_ACCESS_KEY (or AWS_SECRET_ACCESS_KEY)';
+        case 'bucketName': return 'R2_BUCKET_NAME';
+        default: return k;
+      }
+    })
+    .join(', ');
+
+  const hint = `Missing R2 configuration: ${prettyList}.\n` +
+    `Create a .env file at project root with:\n` +
+    `R2_ACCOUNT_ID=your_account_id\nR2_ACCESS_KEY_ID=your_access_key\nR2_SECRET_ACCESS_KEY=your_secret\nR2_BUCKET_NAME=your_bucket`;
+  throw new Error(hint);
+}
 
 // Initialize S3 client for R2
 const r2Client = new S3Client({
