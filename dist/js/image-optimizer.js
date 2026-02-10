@@ -2,6 +2,8 @@
 class ImageOptimizer {
   constructor() {
     this.observer = null;
+    this.resizeSupportChecked = false;
+    this.resizeSupported = false;
     this.init();
   }
 
@@ -22,6 +24,20 @@ class ImageOptimizer {
     
     // Setup lazy loading for new images
     this.setupLazyLoading();
+    // Observe dynamically added images
+    this.observeNewImages();
+  }
+
+  // Determine current site origin and custom domain
+  getSiteOrigin() {
+    const hardcoded = 'https://theayofolahan.com';
+    try {
+      const { origin } = window.location;
+      // Prefer current origin if it matches the hardcoded domain
+      return origin.includes('theayofolahan.com') ? origin : hardcoded;
+    } catch {
+      return hardcoded;
+    }
   }
 
   // Convert old R2 URLs to custom domain URLs with fallback
@@ -31,6 +47,61 @@ class ImageOptimizer {
       return `https://theayofolahan.com/${path}`;
     }
     return url;
+  }
+
+  // Build Cloudflare Image Resizing URL if possible
+  buildResizedUrl(rawUrl, width = 800, quality = 85) {
+    const siteOrigin = this.getSiteOrigin();
+    try {
+      const url = new URL(rawUrl, siteOrigin);
+      // Only attempt resizing for same-origin images
+      if (url.origin !== new URL(siteOrigin).origin) return rawUrl;
+      // Remove leading slash for path join
+      const path = url.pathname.startsWith('/') ? url.pathname : `/${url.pathname}`;
+      // Cloudflare Image Resizing syntax
+      return `${siteOrigin}/cdn-cgi/image/width=${width},quality=${quality},format=auto${path}`;
+    } catch {
+      // rawUrl might be relative path
+      const path = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
+      return `${siteOrigin}/cdn-cgi/image/width=${width},quality=${quality},format=auto${path}`;
+    }
+  }
+
+  // Check if Cloudflare Image Resizing is available
+  async ensureResizeSupport(sampleImageUrl) {
+    if (this.resizeSupportChecked) return this.resizeSupported;
+    this.resizeSupportChecked = true;
+    try {
+      const testUrl = this.buildResizedUrl(sampleImageUrl || '/TAF.jpg', 20, 50);
+      const res = await fetch(testUrl, { method: 'HEAD' });
+      this.resizeSupported = res.ok;
+    } catch {
+      this.resizeSupported = false;
+    }
+    return this.resizeSupported;
+  }
+
+  // Apply responsive attributes to an image element
+  applyResponsiveAttributes(img) {
+    // Always set basic perf attributes
+    img.setAttribute('loading', img.getAttribute('loading') || 'lazy');
+    img.setAttribute('decoding', img.getAttribute('decoding') || 'async');
+
+    // If we've learned resizing is supported, create srcset
+    if (this.resizeSupported) {
+      const rawSrc = img.getAttribute('src');
+      if (!rawSrc || rawSrc.startsWith('data:')) return;
+      const widths = [320, 640, 1024, 1600];
+      const srcset = widths
+        .map((w) => `${this.buildResizedUrl(rawSrc, w)} ${w}w`)
+        .join(', ');
+      img.setAttribute('srcset', srcset);
+      img.setAttribute(
+        'sizes',
+        img.getAttribute('sizes') ||
+          '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      );
+    }
   }
 
   // Test if custom domain is working
@@ -47,48 +118,56 @@ class ImageOptimizer {
 
   // Optimize existing images on page load
   async optimizeExistingImages() {
-    const images = document.querySelectorAll('img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]');
-    
-    // Use custom domain directly since it's now configured
-    console.log('Using custom domain: theayofolahan.com');
-    
-    images.forEach(img => {
-      const originalSrc = img.src;
-      const optimizedSrc = this.convertToCustomDomain(originalSrc);
-      
-      // Add loading optimization attributes
-      img.setAttribute('loading', 'lazy');
-      img.setAttribute('decoding', 'async');
-      
-      // Update src to custom domain or keep original
-      img.src = optimizedSrc;
-      
+    // Gather all images: legacy R2 domain, same-origin absolute, and relative paths
+    const legacySelector = 'img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]';
+    const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://theayofolahan.com/"]';
+    const images = Array.from(document.querySelectorAll(`${legacySelector}, ${sameOriginSelector}`));
+
+    if (images.length === 0) return;
+
+    // Decide once if resizing is available using the first candidate image
+    await this.ensureResizeSupport(images[0].getAttribute('src'));
+
+    images.forEach((img) => {
+      const originalSrc = img.getAttribute('src');
+      const converted = this.convertToCustomDomain(originalSrc);
+
+      // Always set perf attributes and fade-in
+      this.applyResponsiveAttributes(img);
+
+      if (converted !== originalSrc) {
+        img.setAttribute('src', converted);
+      }
+
       // Add error handling with fallback
       img.addEventListener('error', () => {
-        console.warn('Failed to load image, trying fallback:', originalSrc);
-        if (img.src !== originalSrc) {
-          img.src = originalSrc;
+        const currentSrc = img.getAttribute('src');
+        if (currentSrc !== originalSrc) {
+          console.warn('Failed to load optimized image, falling back:', originalSrc);
+          img.setAttribute('src', originalSrc);
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
         } else {
           // If both fail, show placeholder
-          img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+          img.src =
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
         }
       });
 
       // Add fade-in effect
       img.style.opacity = '0';
       img.style.transition = 'opacity 0.3s ease-in-out';
-      
       img.addEventListener('load', () => {
         img.style.opacity = '1';
       });
     });
 
-    // Update Fancybox gallery links
+    // Update Fancybox gallery links (legacy R2 domain only)
     const galleryLinks = document.querySelectorAll('a[href*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]');
-    galleryLinks.forEach(link => {
-      const originalHref = link.href;
+    galleryLinks.forEach((link) => {
+      const originalHref = link.getAttribute('href');
       const optimizedHref = this.convertToCustomDomain(originalHref);
-      link.href = optimizedHref;
+      link.setAttribute('href', optimizedHref);
     });
   }
 
@@ -99,6 +178,40 @@ class ImageOptimizer {
     const lazyImages = document.querySelectorAll('img[data-src]');
     lazyImages.forEach(img => {
       this.observer.observe(img);
+    });
+  }
+
+  // Observe DOM mutations to optimize images added after load
+  observeNewImages() {
+    if (!('MutationObserver' in window)) return;
+    const observer = new MutationObserver((mutations) => {
+      const addedImages = [];
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.tagName === 'IMG') {
+            addedImages.push(node);
+          } else {
+            addedImages.push(...node.querySelectorAll?.('img') || []);
+          }
+        });
+      });
+      if (addedImages.length) {
+        addedImages.forEach((img) => {
+          // Convert legacy src if needed
+          const originalSrc = img.getAttribute('src');
+          if (originalSrc) {
+            const converted = this.convertToCustomDomain(originalSrc);
+            if (converted !== originalSrc) img.setAttribute('src', converted);
+          }
+          // Apply responsive attributes (resizing may be unsupported; method guards internally)
+          this.applyResponsiveAttributes(img);
+        });
+      }
+    });
+    observer.observe(document.documentElement || document.body, {
+      childList: true,
+      subtree: true,
     });
   }
 
