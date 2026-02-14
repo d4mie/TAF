@@ -58,6 +58,9 @@ async function main() {
 
   const allKeys = await listAllKeys(s3, bucket);
   const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".JPG", ".JPEG", ".PNG", ".WEBP", ".GIF"]);
+  // Ignore pre-generated responsive variants (uploaded by optimize-existing-images.js)
+  // Example: "ykb10__w960.webp"
+  const variantFilePattern = /__w\d+\.webp$/i;
 
   const folders = {};
   for (const key of allKeys) {
@@ -66,9 +69,11 @@ async function main() {
     const fileName = rest.join("/");
     if (!fileName) continue; // skip folder placeholders
     if (!imageExtensions.has(path.extname(fileName))) continue; // only images
+    const leaf = fileName.split("/").pop();
+    if (leaf && variantFilePattern.test(leaf)) continue; // ignore generated variants
 
     if (!folders[folder]) folders[folder] = new Set();
-    folders[folder].add(fileName.split("/").pop()); // only leaf filename
+    folders[folder].add(leaf); // only leaf filename
   }
 
   // Convert Sets to sorted arrays

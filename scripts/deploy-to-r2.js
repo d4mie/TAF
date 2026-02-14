@@ -67,11 +67,21 @@ function getContentType(filePath) {
 
 function getCacheControl(filePath) {
   const ext = path.extname(filePath).toLowerCase();
-  if (ext === '.html') {
-    return 'public, max-age=60, must-revalidate';
+  // HTML should update quickly
+  if (ext === '.html') return 'public, max-age=60, must-revalidate';
+
+  // Data files can change when you add images
+  if (ext === '.json') return 'public, max-age=300, must-revalidate';
+
+  // Unversioned assets: keep reasonably cached, but allow updates
+  if (ext === '.js' || ext === '.css') return 'public, max-age=86400, must-revalidate';
+
+  // Cache images/static media for 1 year
+  if (['.svg', '.ico', '.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext)) {
+    return 'public, max-age=31536000, immutable';
   }
-  // Cache static assets for 1 year
-  return 'public, max-age=31536000, immutable';
+
+  return 'public, max-age=86400, must-revalidate';
 }
 
 async function uploadFile(localFile) {
@@ -79,11 +89,9 @@ async function uploadFile(localFile) {
   const key = relative; // Upload to bucket root preserving structure
   const buffer = fs.readFileSync(localFile);
   const contentType = getContentType(localFile);
+  const cacheControl = getCacheControl(localFile);
 
-  // uploadImage already sets CacheControl to 1 year; override for HTML by re-uploading headers if needed
-  // For simplicity here, we call uploadImage and rely on default caching for assets; HTML will still work.
-  // If you want precise control per-file, replace uploadImage with a direct PutObjectCommand usage.
-  const result = await uploadImage(buffer, key, contentType);
+  const result = await uploadImage(buffer, key, contentType, { cacheControl });
   if (!result.success) {
     throw new Error(result.error || 'Unknown upload error');
   }

@@ -114,8 +114,13 @@ function getResponsiveImageUrls(imagePath) {
 }
 
 // Upload image to R2
-async function uploadImage(file, key, contentType = 'image/jpeg') {
+async function uploadImage(file, key, contentType = 'image/jpeg', options = {}) {
   try {
+    const cacheControl =
+      (options && typeof options.cacheControl === 'string' && options.cacheControl.trim()) ||
+      // Cache images/assets aggressively; safe when keys are stable.
+      'public, max-age=31536000, immutable';
+
     const command = new PutObjectCommand({
       Bucket: r2Config.bucketName,
       Key: key,
@@ -123,8 +128,8 @@ async function uploadImage(file, key, contentType = 'image/jpeg') {
       ContentType: contentType,
       // Enable public access
       ACL: 'public-read',
-      // Cache for 1 year
-      CacheControl: 'public, max-age=31536000'
+      // Cache control
+      CacheControl: cacheControl
     });
 
     const result = await r2Client.send(command);

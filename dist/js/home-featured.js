@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.getElementById('featured-grid');
   if (!grid) return;
 
+  // Tiny inline placeholder to prevent eager downloads before lazy-loader kicks in
+  const PLACEHOLDER_SRC =
+    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22/%3E';
+
   function encodePathSegment(segment) {
     return encodeURIComponent(segment).replace(/%2F/g, '/');
   }
@@ -52,7 +56,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const href = `portfolio.html?subcategory=${encodeURIComponent(folder)}`;
       wrapper.innerHTML = `
         <a href="${href}" title="${alt}">
-          <img src="${imageUrl}" alt="${alt}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async" />
+          <img
+            src="${PLACEHOLDER_SRC}"
+            data-src="${imageUrl}"
+            alt="${alt}"
+            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async" />
         </a>
       `;
       grid.appendChild(wrapper);

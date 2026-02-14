@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   const subcategoriesContainer = document.getElementById("subcategories-container");
   const imagesContainer = document.getElementById("image-container");
+
+  // Tiny inline placeholder to prevent eager downloads before lazy-loader kicks in
+  const PLACEHOLDER_SRC =
+    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22/%3E';
   
   console.log("Containers found:", {
     subcategoriesContainer: !!subcategoriesContainer,
@@ -198,7 +202,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               <img
                 alt="gallery-image-${encodedImageName}"
                 class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                src="${imageSrc}"
+                src="${PLACEHOLDER_SRC}"
+                data-src="${imageSrc}"
                 loading="lazy"
                 decoding="async" />
             </a>

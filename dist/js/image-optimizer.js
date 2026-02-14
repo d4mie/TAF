@@ -4,6 +4,11 @@ class ImageOptimizer {
     this.observer = null;
     this.resizeSupportChecked = false;
     this.resizeSupported = false;
+    this.resizeSupportPromise = null;
+    this.staticVariantsSupportChecked = false;
+    this.staticVariantsSupported = false;
+    this.staticVariantsSupportPromise = null;
+    this.staticVariantWidths = [480, 960, 1600];
     this.init();
   }
 
@@ -69,16 +74,167 @@ class ImageOptimizer {
 
   // Check if Cloudflare Image Resizing is available
   async ensureResizeSupport(sampleImageUrl) {
-    if (this.resizeSupportChecked) return this.resizeSupported;
-    this.resizeSupportChecked = true;
-    try {
-      const testUrl = this.buildResizedUrl(sampleImageUrl || '/TAF.jpg', 20, 50);
-      const res = await fetch(testUrl, { method: 'HEAD' });
-      this.resizeSupported = res.ok;
-    } catch {
-      this.resizeSupported = false;
+    if (this.resizeSupportChecked) {
+      if (this.resizeSupportPromise) await this.resizeSupportPromise;
+      return this.resizeSupported;
     }
+
+    this.resizeSupportChecked = true;
+
+    // Use an <img> probe (avoids CORS/fetch quirks; matches how real images load)
+    const probeSource = sampleImageUrl || '/TAF.jpg';
+    const testUrl = this.buildResizedUrl(probeSource, 20, 50);
+
+    // If we couldn't build a resizing URL, treat as unsupported
+    if (!testUrl || testUrl === probeSource || !String(testUrl).includes('/cdn-cgi/image/')) {
+      this.resizeSupported = false;
+      return this.resizeSupported;
+    }
+
+    this.resizeSupportPromise = new Promise((resolve) => {
+      const img = new Image();
+      const timeoutMs = 2500;
+      const timer = setTimeout(() => {
+        cleanup();
+        resolve(false);
+      }, timeoutMs);
+
+      const cleanup = () => {
+        clearTimeout(timer);
+        img.onload = null;
+        img.onerror = null;
+      };
+
+      img.onload = () => {
+        cleanup();
+        resolve(true);
+      };
+      img.onerror = () => {
+        cleanup();
+        resolve(false);
+      };
+
+      img.src = testUrl;
+    })
+      .then((supported) => {
+        this.resizeSupported = Boolean(supported);
+      })
+      .catch(() => {
+        this.resizeSupported = false;
+      })
+      .finally(() => {
+        this.resizeSupportPromise = null;
+      });
+
+    await this.resizeSupportPromise;
     return this.resizeSupported;
+  }
+
+  // Pick a good width for the current element (reduces cache fragmentation)
+  getTargetWidth(img, fallbackWidth = 800) {
+    const candidates = [320, 480, 640, 800, 960, 1200, 1600, 2048];
+    try {
+      const rect = img.getBoundingClientRect?.();
+      const cssWidth = (rect && rect.width) || img.clientWidth || fallbackWidth;
+      const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+      const desired = Math.ceil(cssWidth * dpr);
+      return candidates.find((w) => w >= desired) || candidates[candidates.length - 1];
+    } catch {
+      return fallbackWidth;
+    }
+  }
+
+  // Pick the closest available pre-generated variant width (>= desired if possible)
+  pickStaticVariantWidth(desiredWidth) {
+    const widths = Array.isArray(this.staticVariantWidths) && this.staticVariantWidths.length
+      ? this.staticVariantWidths.slice().sort((a, b) => a - b)
+      : [960];
+    return widths.find((w) => w >= desiredWidth) || widths[widths.length - 1];
+  }
+
+  // Build a pre-generated variant URL (uploaded to R2) like: image__w960.webp
+  buildStaticVariantUrl(rawUrl, width) {
+    const siteOrigin = this.getSiteOrigin();
+    try {
+      const url = new URL(rawUrl, siteOrigin);
+      // Only attempt variants for bucket/custom-domain images
+      const origin = url.origin || '';
+      if (!origin.includes('theayofolahan.com') && !origin.includes('r2.dev')) return null;
+
+      // Normalize to custom domain
+      const normalized = new URL(this.convertToCustomDomain(url.toString()));
+      const parts = normalized.pathname.split('/');
+      const filename = parts.pop();
+      if (!filename) return null;
+
+      const dot = filename.lastIndexOf('.');
+      const base = dot > 0 ? filename.slice(0, dot) : filename;
+      const variantName = `${base}__w${width}.webp`;
+      parts.push(variantName);
+      normalized.pathname = parts.join('/');
+      normalized.search = '';
+      normalized.hash = '';
+      return normalized.toString();
+    } catch {
+      return null;
+    }
+  }
+
+  // Check if pre-generated variants exist (probe once with an <img>)
+  async ensureStaticVariantSupport(sampleImageUrl) {
+    if (this.staticVariantsSupportChecked) {
+      if (this.staticVariantsSupportPromise) await this.staticVariantsSupportPromise;
+      return this.staticVariantsSupported;
+    }
+
+    this.staticVariantsSupportChecked = true;
+
+    const probeSource = sampleImageUrl;
+    const testWidth = this.staticVariantWidths?.[0] || 960;
+    const testUrl = probeSource ? this.buildStaticVariantUrl(probeSource, testWidth) : null;
+
+    if (!testUrl) {
+      this.staticVariantsSupported = false;
+      return this.staticVariantsSupported;
+    }
+
+    this.staticVariantsSupportPromise = new Promise((resolve) => {
+      const img = new Image();
+      const timeoutMs = 2500;
+      const timer = setTimeout(() => {
+        cleanup();
+        resolve(false);
+      }, timeoutMs);
+
+      const cleanup = () => {
+        clearTimeout(timer);
+        img.onload = null;
+        img.onerror = null;
+      };
+
+      img.onload = () => {
+        cleanup();
+        resolve(true);
+      };
+      img.onerror = () => {
+        cleanup();
+        resolve(false);
+      };
+
+      img.src = testUrl;
+    })
+      .then((supported) => {
+        this.staticVariantsSupported = Boolean(supported);
+      })
+      .catch(() => {
+        this.staticVariantsSupported = false;
+      })
+      .finally(() => {
+        this.staticVariantsSupportPromise = null;
+      });
+
+    await this.staticVariantsSupportPromise;
+    return this.staticVariantsSupported;
   }
 
   // Apply responsive attributes to an image element
@@ -89,7 +245,7 @@ class ImageOptimizer {
 
     // If we've learned resizing is supported, create srcset
     if (this.resizeSupported) {
-      const rawSrc = img.getAttribute('src');
+      const rawSrc = img.getAttribute('data-src') || img.getAttribute('src');
       if (!rawSrc || rawSrc.startsWith('data:')) return;
       const widths = [320, 640, 1024, 1600];
       const srcset = widths
@@ -104,47 +260,63 @@ class ImageOptimizer {
     }
   }
 
-  // Test if custom domain is working
-  async testCustomDomain() {
-    const testUrl = 'https://theayofolahan.com/ACTIVEYARD/ykb10.jpg';
-    try {
-      const response = await fetch(testUrl, { method: 'HEAD' });
-      return response.ok;
-    } catch (error) {
-      console.warn('Custom domain test failed:', error);
-      return false;
-    }
-  }
-
   // Optimize existing images on page load
   async optimizeExistingImages() {
     // Gather all images: legacy R2 domain, same-origin absolute, and relative paths
     const legacySelector = 'img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]';
     const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://theayofolahan.com/"]';
-    const images = Array.from(document.querySelectorAll(`${legacySelector}, ${sameOriginSelector}`));
+    const lazySelector = 'img[data-src]';
+    const images = Array.from(document.querySelectorAll(`${legacySelector}, ${sameOriginSelector}, ${lazySelector}`));
 
     if (images.length === 0) return;
 
-    // Decide once if resizing is available using the first candidate image
-    await this.ensureResizeSupport(images[0].getAttribute('src'));
+    // Decide once if resizing is available using a good probe image.
+    // Prefer an absolute bucket image URL (works even if site is hosted elsewhere).
+    const candidates = images
+      .map((img) => img.getAttribute('data-src') || img.getAttribute('src'))
+      .filter((u) => u && typeof u === 'string' && !u.startsWith('data:'));
+
+    const hostedOnCustomDomain = (() => {
+      try {
+        return window.location.origin.includes('theayofolahan.com');
+      } catch {
+        return false;
+      }
+    })();
+
+    const probeCandidate =
+      candidates.find((u) => u.includes('theayofolahan.com') || u.includes('r2.dev')) ||
+      (hostedOnCustomDomain ? candidates[0] : null);
+
+    if (probeCandidate) {
+      await this.ensureResizeSupport(this.convertToCustomDomain(probeCandidate));
+    }
 
     images.forEach((img) => {
-      const originalSrc = img.getAttribute('src');
+      const originalSrc = img.getAttribute('data-src') || img.getAttribute('src');
+      if (!originalSrc) return;
+
       const converted = this.convertToCustomDomain(originalSrc);
 
       // Always set perf attributes and fade-in
       this.applyResponsiveAttributes(img);
 
-      if (converted !== originalSrc) {
-        img.setAttribute('src', converted);
+      // Convert legacy domain for both eager and lazy images
+      if (img.hasAttribute('data-src')) {
+        if (converted !== originalSrc) img.setAttribute('data-src', converted);
+        // Ensure we observe lazy images present at load
+        if (this.observer) this.observer.observe(img);
+      } else {
+        if (converted !== originalSrc) img.setAttribute('src', converted);
       }
 
       // Add error handling with fallback
       img.addEventListener('error', () => {
         const currentSrc = img.getAttribute('src');
-        if (currentSrc !== originalSrc) {
+        if (currentSrc && currentSrc !== originalSrc) {
           console.warn('Failed to load optimized image, falling back:', originalSrc);
           img.setAttribute('src', originalSrc);
+          img.removeAttribute('data-src');
           img.removeAttribute('srcset');
           img.removeAttribute('sizes');
         } else {
@@ -198,14 +370,24 @@ class ImageOptimizer {
       });
       if (addedImages.length) {
         addedImages.forEach((img) => {
-          // Convert legacy src if needed
+          // Convert legacy src/data-src if needed
           const originalSrc = img.getAttribute('src');
-          if (originalSrc) {
+          const originalDataSrc = img.getAttribute('data-src');
+          if (originalDataSrc) {
+            const converted = this.convertToCustomDomain(originalDataSrc);
+            if (converted !== originalDataSrc) img.setAttribute('data-src', converted);
+          } else if (originalSrc) {
             const converted = this.convertToCustomDomain(originalSrc);
             if (converted !== originalSrc) img.setAttribute('src', converted);
           }
+
           // Apply responsive attributes (resizing may be unsupported; method guards internally)
           this.applyResponsiveAttributes(img);
+
+          // Hook up lazy loading for dynamically added lazy images
+          if (img.hasAttribute('data-src') && this.observer) {
+            this.observer.observe(img);
+          }
         });
       }
     });
@@ -225,20 +407,46 @@ class ImageOptimizer {
         if (src) {
           // Convert to custom domain
           const optimizedSrc = this.convertToCustomDomain(src);
+          const maybeOptimize = async () => {
+            // 1) Prefer Cloudflare resizing when available
+            await this.ensureResizeSupport(optimizedSrc);
+            if (this.resizeSupported) {
+              const targetWidth = this.getTargetWidth(img, 800);
+              return this.buildResizedUrl(optimizedSrc, targetWidth, 85);
+            }
+
+            // 2) Otherwise use pre-generated WebP variants when available
+            await this.ensureStaticVariantSupport(optimizedSrc);
+            if (this.staticVariantsSupported) {
+              const desired = this.getTargetWidth(img, 800);
+              const w = this.pickStaticVariantWidth(desired);
+              const variantUrl = this.buildStaticVariantUrl(optimizedSrc, w);
+              if (variantUrl) return variantUrl;
+            }
+
+            // 3) Fallback to original
+            return optimizedSrc;
+          };
           
           // Create a new image to preload
           const newImg = new Image();
-          newImg.onload = () => {
+          maybeOptimize().then((finalSrc) => {
+            newImg.onload = () => {
+              img.src = finalSrc;
+              img.removeAttribute('data-src');
+              img.classList.add('loaded');
+            };
+            newImg.onerror = () => {
+              // Fallback to original URL
+              img.src = optimizedSrc;
+              img.removeAttribute('data-src');
+            };
+            newImg.src = finalSrc;
+          }).catch(() => {
+            // Fallback to original URL
             img.src = optimizedSrc;
             img.removeAttribute('data-src');
-            img.classList.add('loaded');
-          };
-          newImg.onerror = () => {
-            // Fallback to original URL
-            img.src = src;
-            img.removeAttribute('data-src');
-          };
-          newImg.src = optimizedSrc;
+          });
         }
         
         this.observer.unobserve(img);
@@ -290,19 +498,16 @@ class ImageOptimizer {
   }
 }
 
-// Initialize image optimizer when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+function initImageOptimizer() {
   window.imageOptimizer = new ImageOptimizer();
-  
-  // Preload critical images (first few images on homepage)
-  const criticalImages = [
-    'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/ACTIVEYARD/ykb10.jpg',
-    'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/STREET%20SOUK%2023%E2%80%99/ss44.JPG',
-    'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/BUJU/buju3.jpg'
-  ];
-  
-  window.imageOptimizer.preloadCriticalImages(criticalImages);
-});
+}
+
+// Initialize as early as possible (works with deferred scripts too)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initImageOptimizer);
+} else {
+  initImageOptimizer();
+}
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {
