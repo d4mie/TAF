@@ -18,8 +18,8 @@ class ImageOptimizer {
       this.observer = new IntersectionObserver(
         this.handleIntersection.bind(this),
         {
-          rootMargin: '50px',
-          threshold: 0.1
+          rootMargin: '400px 0px',
+          threshold: 0.01
         }
       );
     }
@@ -288,8 +288,14 @@ class ImageOptimizer {
       candidates.find((u) => u.includes('theayofolahan.com') || u.includes('r2.dev')) ||
       (hostedOnCustomDomain ? candidates[0] : null);
 
+    // Pre-run both resize and static variant probes in parallel so they're
+    // already resolved by the time IntersectionObserver fires
     if (probeCandidate) {
-      await this.ensureResizeSupport(this.convertToCustomDomain(probeCandidate));
+      const convertedProbe = this.convertToCustomDomain(probeCandidate);
+      await Promise.all([
+        this.ensureResizeSupport(convertedProbe),
+        this.ensureStaticVariantSupport(convertedProbe)
+      ]);
     }
 
     images.forEach((img) => {
@@ -407,46 +413,32 @@ class ImageOptimizer {
         if (src) {
           // Convert to custom domain
           const optimizedSrc = this.convertToCustomDomain(src);
-          const maybeOptimize = async () => {
-            // 1) Prefer Cloudflare resizing when available
-            await this.ensureResizeSupport(optimizedSrc);
-            if (this.resizeSupported) {
-              const targetWidth = this.getTargetWidth(img, 800);
-              return this.buildResizedUrl(optimizedSrc, targetWidth, 85);
-            }
 
-            // 2) Otherwise use pre-generated WebP variants when available
-            await this.ensureStaticVariantSupport(optimizedSrc);
-            if (this.staticVariantsSupported) {
-              const desired = this.getTargetWidth(img, 800);
-              const w = this.pickStaticVariantWidth(desired);
-              const variantUrl = this.buildStaticVariantUrl(optimizedSrc, w);
-              if (variantUrl) return variantUrl;
-            }
+          // Use already-resolved probe results (pre-run in init) for fast path
+          let finalSrc = optimizedSrc;
+          if (this.resizeSupported) {
+            const targetWidth = this.getTargetWidth(img, 800);
+            finalSrc = this.buildResizedUrl(optimizedSrc, targetWidth, 85);
+          } else if (this.staticVariantsSupported) {
+            const desired = this.getTargetWidth(img, 800);
+            const w = this.pickStaticVariantWidth(desired);
+            const variantUrl = this.buildStaticVariantUrl(optimizedSrc, w);
+            if (variantUrl) finalSrc = variantUrl;
+          }
 
-            // 3) Fallback to original
-            return optimizedSrc;
-          };
-          
-          // Create a new image to preload
+          // Load the image directly without extra async probing
           const newImg = new Image();
-          maybeOptimize().then((finalSrc) => {
-            newImg.onload = () => {
-              img.src = finalSrc;
-              img.removeAttribute('data-src');
-              img.classList.add('loaded');
-            };
-            newImg.onerror = () => {
-              // Fallback to original URL
-              img.src = optimizedSrc;
-              img.removeAttribute('data-src');
-            };
-            newImg.src = finalSrc;
-          }).catch(() => {
+          newImg.onload = () => {
+            img.src = finalSrc;
+            img.removeAttribute('data-src');
+            img.classList.add('loaded');
+          };
+          newImg.onerror = () => {
             // Fallback to original URL
             img.src = optimizedSrc;
             img.removeAttribute('data-src');
-          });
+          };
+          newImg.src = finalSrc;
         }
         
         this.observer.unobserve(img);
