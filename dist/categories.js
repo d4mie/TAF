@@ -154,18 +154,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Create a loading message
-    const loadingMessage = document.createElement("div");
-    loadingMessage.className = "text-center py-8";
-    loadingMessage.innerHTML = `
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-      <p class="text-gray-600">Loading images from ${folderName}...</p>
-    `;
-    imagesContainer.appendChild(loadingMessage);
-
     // Render from real index data
-    setTimeout(() => {
-      imagesContainer.innerHTML = "";
+    imagesContainer.innerHTML = "";
 
       const folders = (indexData && indexData.folders) || {};
       const resolvedKey = findFolderKey(folderName, folders);
@@ -216,7 +206,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (typeof Fancybox !== 'undefined') {
         Fancybox.bind("[data-fancybox]", {});
       }
-    }, 300);
   }
 
   // Initialize Fancybox for any existing images
