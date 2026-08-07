@@ -194,3 +194,82 @@ body {
   text-decoration: none !important;
   border-bottom: 0 !important;
 }
+
+/* Featured project intro (homepage deep-link) */
+.project-intro {
+  max-width: 42rem;
+  margin: 2.5rem auto 3rem;
+  padding: 0 1rem;
+  text-align: center;
+  animation: projectIntroIn 0.7s ease-out both;
+}
+
+#project-intro[hidden] {
+  display: none !important;
+}
+
+.project-intro-title {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.project-intro-rule {
+  width: 3rem;
+  height: 1px;
+  margin: 1.25rem auto 1.35rem;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.project-intro-caption {
+  margin: 0 auto;
+  max-width: 34rem;
+  font-family: Signika, sans-serif;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  font-weight: 300;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: #525252;
+}
+
+@media (prefers-color-scheme: dark) {
+  .project-intro-caption {
+    color: #d4d4d4;
+  }
+}
+
+@keyframes projectIntroIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html.project-view #categories-section,
+html.project-view #subcategories-container,
+body.project-view #categories-section,
+body.project-view #subcategories-container,
+html.project-view .categories,
+body.project-view .categories {
+  display: none !important;
+}
+
+html.project-view #image-container,
+body.project-view #image-container {
+  margin-top: 0.5rem;
+}
+
+html.project-view #project-intro,
+body.project-view #project-intro {
+  display: block !important;
+}

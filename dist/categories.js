@@ -179,23 +179,35 @@ document.addEventListener("DOMContentLoaded", async () => {
       const base = (indexData.bucketBaseURL || 'https://theayofolahan.com').replace(/\/$/, '');
       const encodedFolderName = encodePathSegment(resolvedKey);
 
-      fileNames.forEach((imageName) => {
-        const encodedImageName = encodePathSegment(imageName);
-        const imageSrc = `${base}/${encodedFolderName}/${encodedImageName}`;
+      function buildVariantUrls(imageName) {
+        const stem = imageName.replace(/\.[^.]+$/, "");
+        const original = `${base}/${encodedFolderName}/${encodePathSegment(imageName)}`;
+        const w480 = `${base}/${encodedFolderName}/${encodePathSegment(`${stem}__w480.webp`)}`;
+        const w960 = `${base}/${encodedFolderName}/${encodePathSegment(`${stem}__w960.webp`)}`;
+        const w1600 = `${base}/${encodedFolderName}/${encodePathSegment(`${stem}__w1600.webp`)}`;
+        return { original, w480, w960, w1600 };
+      }
+
+      fileNames.forEach((imageName, index) => {
+        const urls = buildVariantUrls(imageName);
+        const eager = index < 4;
 
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "w-full md:w-1/2 p-1";
 
+        // Grid shows mid-size WebP; lightbox opens larger WebP (falls back to original)
         imageWrapper.innerHTML = `
           <div class="overflow-hidden h-full w-full">
-            <a href="${imageSrc}" data-fancybox="gallery">
+            <a href="${urls.w1600}" data-fancybox="gallery">
               <img
-                alt="gallery-image-${encodedImageName}"
+                alt="${imageName.replace(/"/g, "&quot;")}"
                 class="block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110"
-                src="${PLACEHOLDER_SRC}"
-                data-src="${imageSrc}"
-                loading="lazy"
-                decoding="async" />
+                src="${urls.w960}"
+                srcset="${urls.w480} 480w, ${urls.w960} 960w, ${urls.w1600} 1600w"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="${eager ? "eager" : "lazy"}"
+                decoding="async"
+                onerror="this.onerror=null;this.removeAttribute('srcset');this.src='${urls.original}';this.parentElement.href='${urls.original}';" />
             </a>
           </div>
         `;
@@ -215,17 +227,106 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Deep-link support: render gallery if ?subcategory= is present
+  // Captions for the 9 homepage featured projects
+  const FEATURED_PROJECTS = {
+    "Grace Ladoja Portraits at Nike x HMC Launch": {
+      title: "Grace for Nike x Homecoming",
+      caption:
+        "Portraits of Grace Ladoja at the launch of her Nike collaboration, the Homecoming Air Max Plus TN. As documented by Folahanmi Ayodele Onajoko.",
+    },
+    "STREET SOUK EDITORIAL 2026": {
+      title: "StreetSouk Editorial",
+      caption:
+        "Editorial for StreetSouk. Photographed StreetSouk’s 2026 Summer editorial campaign including retail brands on their line.",
+    },
+    "KAI CENAT IN LAGOS": {
+      title: "Kai Cenat",
+      caption:
+        "Kai’s arrival to Lagos for his charity intervention in the Makoko community school upliftment. As covered by Folahanmi Ayodele Onajoko.",
+    },
+    "GUNNA WORLD TOUR LAGOS": {
+      title: "Wunna World Tour by Gunna",
+      caption:
+        "Had the opportunity to work with the media team to document the Lagos stop of the WUNNA world tour by Gunna.",
+    },
+    "Omahlay's Sophomore Listening": {
+      title: "Omah Lay’s Sophomore Album",
+      caption:
+        "Omahlay’s Special Listening occasion for Clarity Of Mind, the singer’s sophomore album, 2026. As documented by Folahanmi Ayodele Onajoko.",
+    },
+    "STREETSOUK AT LAGOS FASHION WEEK": {
+      title: "StreetSouk & Lagos Fashion Week",
+      caption:
+        "Documented the first streetwear brand to walk at the prestigious Lagos Fashion Week, 2025.",
+    },
+    "StreetSouk Convention 2025": {
+      title: "StreetSouk Annual Convention",
+      caption:
+        "The biggest streetwear convention in Africa, 2025 edition. As documented by Folahanmi Ayodele Onajoko.",
+    },
+    "AMAZON X NEMSIA PRODUCTION": {
+      title: "Amazon Prime & Nemsia Production",
+      caption:
+        "Private screenings for the Amazon & Nemsia 2025 Film, “Ms. Kanyin”. As documented by Folahanmi Ayodele Onajoko.",
+    },
+    "Clint's Portraits": {
+      title: "Clint at Homecoming",
+      caption:
+        "Portraits of Corteiz Founder, Clint Ogbenna, at the Homecoming 2026 Summit. As documented by Folahanmi Ayodele Onajoko.",
+    },
+  };
+
+  function getFeaturedMeta(folderName) {
+    if (!folderName) return null;
+    if (FEATURED_PROJECTS[folderName]) return FEATURED_PROJECTS[folderName];
+    const unicodeVariant = folderName.replace(/'/g, "’");
+    if (FEATURED_PROJECTS[unicodeVariant]) return FEATURED_PROJECTS[unicodeVariant];
+    const asciiVariant = folderName.replace(/’/g, "'");
+    if (FEATURED_PROJECTS[asciiVariant]) return FEATURED_PROJECTS[asciiVariant];
+    return null;
+  }
+
+  function enterProjectView(folderName) {
+    const meta = getFeaturedMeta(folderName);
+    const intro = document.getElementById("project-intro");
+    const titleEl = document.getElementById("project-title");
+    const captionEl = document.getElementById("project-caption");
+
+    document.body.classList.add("project-view");
+    if (imagesContainer) imagesContainer.innerHTML = "";
+    if (subcategoriesContainer) subcategoriesContainer.innerHTML = "";
+
+    if (meta && intro && titleEl && captionEl) {
+      titleEl.textContent = meta.title;
+      captionEl.textContent = meta.caption;
+      intro.hidden = false;
+      document.title = `theayofolahan — ${meta.title}`;
+    }
+
+    renderGallery(folderName);
+  }
+
+  // Deep-link support: homepage featured projects (?project=) or legacy (?subcategory=)
   try {
     const params = new URLSearchParams(window.location.search);
-    const subParam = params.get('subcategory');
-    if (subParam) {
-      // Try to map display name to folder key first
-      const displayToFolder = folderByDisplayName[subParam] ? subParam : null;
-      const folderName = displayToFolder ? folderByDisplayName[subParam] : subParam;
-      renderGallery(folderName);
+    const projectParam =
+      window.__TAF_PROJECT__ ||
+      params.get("project") ||
+      params.get("subcategory");
+
+    if (projectParam) {
+      const folderName = folderByDisplayName[projectParam]
+        ? folderByDisplayName[projectParam]
+        : projectParam;
+
+      // Homepage tiles always use ?project= — open clean project view
+      if (params.get("project") || window.__TAF_PROJECT__ || getFeaturedMeta(folderName)) {
+        enterProjectView(folderName);
+      } else {
+        renderGallery(folderName);
+      }
     }
   } catch (e) {
-    console.warn('Failed to parse subcategory param:', e);
+    console.warn("Failed to parse project/subcategory param:", e);
   }
 });
