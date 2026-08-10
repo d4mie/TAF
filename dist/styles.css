@@ -174,7 +174,7 @@ body {
 #image-container div {
   width: 100%;
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: 0;
   aspect-ratio: 1 / 1;
 }
 
@@ -182,8 +182,27 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#featured-grid a,
+#featured-grid img {
+  border-radius: 0 !important;
+}
+
+.visionary-title {
+  background-image: linear-gradient(120deg, #111111 0%, #8a8a8a 45%, #f5f5f5 70%, #5a5a5a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .visionary-title {
+    background-image: linear-gradient(120deg, #f5f5f5 0%, #9a9a9a 40%, #ffffff 65%, #6b6b6b 100%);
+  }
 }
 
 /* Ensure no underline anywhere inside subcategories container */
@@ -236,6 +255,19 @@ body {
   line-height: 1.75;
   letter-spacing: 0.01em;
   color: #525252;
+}
+
+.project-caption-link {
+  color: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1.5px;
+}
+
+.project-caption-link:hover {
+  opacity: 0.7;
 }
 
 @media (prefers-color-scheme: dark) {

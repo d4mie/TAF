@@ -2,44 +2,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.getElementById('featured-grid');
   if (!grid) return;
 
-  // Fixed 3x3 homepage order (left → right, top → bottom)
+  // Fixed homepage order (left → right, top → bottom)
   const FEATURED = [
     {
-      folder: 'Grace Ladoja Portraits at Nike x HMC Launch',
-      title: 'Grace Ladoja Portraits at Nike x HMC Launch',
-    },
-    {
-      folder: 'STREET SOUK EDITORIAL 2026',
-      title: 'STREETSOUK EDITORIAL 2026',
-      cover: 'TGM02178.jpg',
+      folder: 'NIKE x HOMECOMING',
+      title: 'NIKE X HOMECOMING',
     },
     {
       folder: 'KAI CENAT IN LAGOS',
-      title: 'KAI CENAT IN LAGOS',
+      title: 'KAI CENAT',
     },
     {
       folder: 'GUNNA WORLD TOUR LAGOS',
-      title: 'GUNNA WORLD TOUR LAGOS',
+      title: 'WUNNA WORLD TOUR BY GUNNA',
+    },
+    {
+      folder: 'Grace Ladoja Portraits at Nike x HMC Launch',
+      title: 'GRACE FOR NIKE X HOMECOMING',
+    },
+    {
+      folder: 'STREET SOUK EDITORIAL 2026',
+      title: 'STREETSOUK EDITORIAL',
+      cover: 'TGM02178.jpg',
     },
     {
       folder: "Omahlay's Sophomore Listening",
-      title: "Omahlay's Sophomore Listening",
+      title: "OMAH LAY'S SOPHOMORE ALBUM",
     },
     {
-      folder: 'STREETSOUK AT LAGOS FASHION WEEK',
-      title: 'STREETSOUK AT LAGOS FASHION WEEK',
-    },
-    {
-      folder: 'StreetSouk Convention 2025',
-      title: 'StreetSouk Convention 2025',
-    },
-    {
-      folder: 'AMAZON X NEMSIA PRODUCTION',
-      title: 'AMAZON X NEMSIA PRODUCTION',
+      folder: 'Lagos Fashion Week 2025',
+      title: 'LAGOS FASHION WEEK 2025',
     },
     {
       folder: "Clint's Portraits",
-      title: "Clint's Portraits",
+      title: 'CLINT AT HOMECOMING',
+    },
+    {
+      folder: 'STREETSOUK AT LAGOS FASHION WEEK',
+      title: 'STREETSOUK & LAGOS FASHION WEEK',
+    },
+    {
+      folder: 'StreetSouk Convention 2025',
+      title: 'STREETSOUK ANNUAL CONVENTION',
+    },
+    {
+      folder: 'AMAZON X NEMSIA PRODUCTION',
+      title: 'AMAZON PRIME & NEMSIA PRODUCTION',
     },
   ];
 
@@ -105,17 +113,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const urls = buildVariantUrls(base, resolvedKey, fileName);
       const href = `portfolio.html?project=${encodeURIComponent(resolvedKey)}`;
       const safeTitle = escapeHtml(title);
-      // First row loads immediately; rest lazy-load
-      const eager = index < 3;
+      // First few tiles load immediately; rest lazy-load
+      const eager = index < 4;
 
       const item = document.createElement('div');
       item.className = 'flex flex-col';
       item.innerHTML = `
-        <a href="${href}" title="${safeTitle}" class="block aspect-square overflow-hidden rounded-lg shadow-lg">
+        <a href="${href}" title="${safeTitle}" class="block aspect-square overflow-hidden">
           <img
-            src="${urls.w960}"
-            srcset="${urls.w480} 480w, ${urls.w960} 960w, ${urls.w1600} 1600w"
-            sizes="(max-width: 768px) 33vw, 360px"
+            src="${urls.w480}"
+            srcset="${urls.w480} 480w, ${urls.w960} 960w"
+            sizes="(max-width: 768px) 50vw, 420px"
             alt="${safeTitle}"
             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             loading="${eager ? 'eager' : 'lazy'}"
@@ -123,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             decoding="async"
             onerror="this.onerror=null;this.removeAttribute('srcset');this.src='${urls.original}'" />
         </a>
-        <p class="mt-3 text-center text-sm md:text-base font-signika tracking-wide">${safeTitle}</p>
+        <p class="mt-3 text-center text-sm md:text-base font-signika tracking-wide uppercase">${safeTitle}</p>
       `;
       grid.appendChild(item);
     });
