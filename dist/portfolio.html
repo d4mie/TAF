@@ -2,6 +2,17 @@
 <html lang="en" class="scroll-smooth">
 
 <head>
+  <!-- Theme bootstrap (before paint) -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("taf-theme");
+        var dark = stored ==="dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (stored ==="light") dark = false;
+        document.documentElement.classList.toggle("dark", dark);
+      } catch (e) {}
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +20,8 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="circle favicon.ico" />
-  <link rel="stylesheet" href="output.css?v=20260807b" />
-  <link rel="stylesheet" href="styles.css?v=20260810d" />
+  <link rel="stylesheet" href="output.css?v=20260811e" />
+  <link rel="stylesheet" href="styles.css?v=20260811e" />
   
   <!-- Preconnect to image CDN for faster loading -->
   <link rel="preconnect" href="https://theayofolahan.com" crossorigin />
@@ -34,11 +45,10 @@
 
   <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <!-- Start - Fonts -->
+   <!-- Start - Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://fonts.googleapis.com/" />
-  <link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- End - Fonts -->
 
   <!-- Start - Fancybox Scripts -->
@@ -58,7 +68,7 @@
         var intro = document.getElementById("project-intro");
         var images = document.getElementById("image-container");
         if (intro) intro.removeAttribute("hidden");
-        if (images) images.innerHTML = "";
+        if (images) images.innerHTML ="";
       });
     }
   </script>
@@ -69,22 +79,36 @@
     <nav id="nav" x-data="{ open: false }" role="navigation" class="w-full">
       <div class="container mx-auto flex flex-wrap items-center md:flex-no-wrap">
         <div class="mr-4 md:mr-8">
-          <a href="/" class="text-2xl font-signika font-bold">AyoFolahan</a>
+          <a href="/" class="text-2xl font-bold">AyoFolahan</a>
         </div>
-        <div class="ml-auto md:hidden flex items-center justify-start">
+        <div class="ml-auto flex items-center gap-3 md:order-last md:ml-4">
+          <button type="button" data-theme-toggle class="theme-toggle tap-highlight-transparent"
+            aria-label="Switch to dark mode" title="Toggle color mode">
+            <span class="theme-toggle-icon theme-toggle-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+              </svg>
+            </span>
+            <span class="theme-toggle-icon theme-toggle-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z"></path>
+              </svg>
+            </span>
+          </button>
           <button onclick="menuToggle()" @click="open = !open"
-            class="tap-highlight-transparent text-black dark:text-white w-5 h-5 relative focus:outline-none"
-            @click="open = !open">
+            class="md:hidden tap-highlight-transparent text-black dark:text-white w-5 h-5 relative focus:outline-none">
+
             <span class="sr-only">Open main menu</span>
             <div class="block w-5 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <span aria-hidden="true"
                 class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out"
                 :class="{'rotate-45': open,' -translate-y-1.5': !open }"></span>
               <span aria-hidden="true"
-                class="block absolute  h-0.5 w-5 bg-current   transform transition duration-500 ease-in-out"
-                :class="{'opacity-0': open } "></span>
+                class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out"
+                :class="{'opacity-0': open }"></span>
               <span aria-hidden="true"
-                class="block absolute h-0.5 w-5 bg-current transform  transition duration-500 ease-in-out"
+                class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out"
                 :class="{'-rotate-45': open, ' translate-y-1.5': !open}"></span>
             </div>
           </button>
@@ -94,24 +118,24 @@
           <ul id="ulMenu"
             class="flex flex-col duration-300 ease-out md:space-x-5 sm:transition-none mt-5 md:flex-row md:items-center md:ml-auto md:mt-0 md:pt-0 md:border-0">
             <li class="group transition duration-300">
-              <a href="/" class="font-signika text-2xl tap-highlight-transparent">HOME
+              <a href="/" class="text-2xl tap-highlight-transparent">HOME
                 <span class="hidden md:block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
               </a>
             </li>
             <!-- Temporary: Portfolio nav hidden (page/flow kept) -->
             <li class="hidden group transition duration-300">
-              <a href="portfolio.html" class="font-signika text-2xl tap-highlight-transparent">PORTFOLIO
+              <a href="portfolio.html" class="text-2xl tap-highlight-transparent">PORTFOLIO
                 <span class="hidden md:block h-0.5 bg-black dark:bg-white"></span>
               </a>
             </li>
             <li class="group transition duration-300">
-              <a href="about_me.html" class="font-signika text-2xl tap-highlight-transparent">ABOUT ME
+              <a href="about_me.html" class="text-2xl tap-highlight-transparent">ABOUT ME
                 <span
                   class="hidden md:block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
               </a>
             </li>
             <li class="group transition duration-300">
-              <a href="contact.html" class="font-signika text-2xl tap-highlight-transparent">CONTACT
+              <a href="contact.html" class="text-2xl tap-highlight-transparent">CONTACT
                 <span class="hidden md:block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black dark:bg-white"></span>
               </a>
             </li>
@@ -391,7 +415,7 @@
     <div class="max-w-screen-xl py-16 mx-auto">
       <div class="grid grid-cols-1 gap-8 text-center mx-auto">
         <div>
-          <p class="font-signika"><b>AyoFolahan</b></p>
+          <p><b>AyoFolahan</b></p>
           <p class="mt-4 text-sm text-gray-600 dark:text-gray-300">
             Victoria Island, Lagos, NG <br />(809) 661-1664
           </p>
@@ -450,6 +474,7 @@
   </footer>
   <script src="fade_in.js?v=20260807c"></script>
   <script src="menu.js?v=20260807c"></script>
+  <script src="js/theme.js?v=20260811e"></script>
 </body>
 
 </html>
