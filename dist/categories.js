@@ -285,6 +285,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       caption:
         "Private screenings for the Amazon & Nemsia 2025 Film, “Ms. Kanyin”. As documented by Folahanmi Ayodele Onajoko.",
     },
+    "BOLAPSD BASEMENT PARTY": {
+      title: "BOLAPSD",
+      caption:
+        "Captured special cultural moments at the Bolapsd basement party 2026, a real milestone for the series.",
+    },
+    "CENTRALCEE AT STREETSOUK'25 ": {
+      title: "CENCH AT STREETSOUK 25",
+      caption: "",
+    },
+    "BOARDROOM BRIDE": {
+      title: "BOARDROOM BRIDE",
+      caption:
+        "An editorial series with the team exploring multiple personalities.",
+    },
+    "HERWORLD- THE EDITORIAL": {
+      title: "HERWORLD",
+      caption:
+        "An editorial series spotlighting the essence of being the topic of interest as you climb the ladder of success.",
+    },
+    "RYTHM- THE EDITORIAL ": {
+      title: "RYTHM",
+      caption:
+        "Editorial series with an amazing set of collaborators I had the opportunity of creating with.",
+    },
+    "PURE FORM - THE EDITORIAL": {
+      title: "PURE FORM",
+      caption:
+        "Editorial with Omoloto, exploring her style and brilliant essence.",
+    },
+    "crazies campaign": {
+      title: "CRAZIES CAMPAIGN",
+      caption: "Documented the 2025 launch campaign for The Crazies.",
+    },
+    "STOMFIT - SERENE DAYS": {
+      title: "STOMFITS- SERENE DAYS",
+      caption: "Campaign for Stomfits 2024.",
+    },
+    TINMEYIN: {
+      title: "TINMEYIN",
+      caption: "Light test portrait images of Tinmeyin.",
+    },
+    GUNNA: {
+      title: "GUNNA",
+      caption: "Gunna at Streetsouk 2024.",
+    },
+    "stomfit serene days - BTS": {
+      title: "STOMFITS SERENE DAYS BTS",
+      caption: "",
+    },
   };
 
   function getFeaturedMeta(folderName) {
@@ -309,12 +358,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (meta && intro && titleEl && captionEl) {
       titleEl.textContent = meta.title;
-      // Allow simple HTML links in captions (e.g. CLOSE TO HOME)
-      if (/<[a-z][\s\S]*>/i.test(meta.caption)) {
-        captionEl.innerHTML = meta.caption;
+      const ruleEl = document.getElementById("project-intro-rule");
+      const hasCaption = Boolean(meta.caption && String(meta.caption).trim());
+
+      if (hasCaption) {
+        // Allow simple HTML links in captions (e.g. CLOSE TO HOME)
+        if (/<[a-z][\s\S]*>/i.test(meta.caption)) {
+          captionEl.innerHTML = meta.caption;
+        } else {
+          captionEl.textContent = meta.caption;
+        }
+        captionEl.hidden = false;
+        if (ruleEl) ruleEl.hidden = false;
       } else {
-        captionEl.textContent = meta.caption;
+        captionEl.textContent = "";
+        captionEl.innerHTML = "";
+        captionEl.hidden = true;
+        if (ruleEl) ruleEl.hidden = true;
       }
+
       intro.hidden = false;
       document.title = `AyoFolahan — ${meta.title}`;
     }

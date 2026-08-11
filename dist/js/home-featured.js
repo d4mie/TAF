@@ -51,6 +51,50 @@ document.addEventListener('DOMContentLoaded', async () => {
       folder: 'AMAZON X NEMSIA PRODUCTION',
       title: 'AMAZON PRIME & NEMSIA PRODUCTION',
     },
+    {
+      folder: 'BOLAPSD BASEMENT PARTY',
+      title: 'BOLAPSD',
+    },
+    {
+      folder: "CENTRALCEE AT STREETSOUK'25 ",
+      title: 'CENCH AT STREETSOUK 25',
+    },
+    {
+      folder: 'BOARDROOM BRIDE',
+      title: 'BOARDROOM BRIDE',
+    },
+    {
+      folder: 'HERWORLD- THE EDITORIAL',
+      title: 'HERWORLD',
+    },
+    {
+      folder: 'RYTHM- THE EDITORIAL ',
+      title: 'RYTHM',
+    },
+    {
+      folder: 'PURE FORM - THE EDITORIAL',
+      title: 'PURE FORM',
+    },
+    {
+      folder: 'crazies campaign',
+      title: 'CRAZIES CAMPAIGN',
+    },
+    {
+      folder: 'STOMFIT - SERENE DAYS',
+      title: 'STOMFITS- SERENE DAYS',
+    },
+    {
+      folder: 'TINMEYIN',
+      title: 'TINMEYIN',
+    },
+    {
+      folder: 'GUNNA',
+      title: 'GUNNA',
+    },
+    {
+      folder: 'stomfit serene days - BTS',
+      title: 'STOMFITS SERENE DAYS BTS',
+    },
   ];
 
   function encodePathSegment(segment) {
@@ -105,6 +149,82 @@ document.addEventListener('DOMContentLoaded', async () => {
     img.src = urls.w480;
     img.srcset = `${urls.w480} 480w, ${urls.w960} 960w`;
     return img;
+  }
+
+  // Pull a soft accent color from the cover image for the caption rule / glow
+  function sampleAccentFromImage(imgEl, onColor) {
+    if (!imgEl || typeof onColor !== 'function') return;
+
+    const apply = () => {
+      try {
+        const src = imgEl.currentSrc || imgEl.src;
+        if (!src) return;
+
+        let sameOrigin = false;
+        try {
+          sameOrigin = new URL(src, window.location.href).origin === window.location.origin;
+        } catch (_) {
+          sameOrigin = false;
+        }
+
+        const sample = new Image();
+        // Only force CORS for cross-origin URLs (same-origin + crossOrigin can break reads)
+        if (!sameOrigin) sample.crossOrigin = 'anonymous';
+        sample.decoding = 'async';
+        sample.onload = () => {
+          try {
+            const size = 24;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (!ctx) return;
+            ctx.drawImage(sample, 0, 0, size, size);
+            const { data } = ctx.getImageData(0, 0, size, size);
+
+            let rSum = 0;
+            let gSum = 0;
+            let bSum = 0;
+            let weight = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              const a = data[i + 3];
+              if (a < 180) continue;
+
+              const max = Math.max(r, g, b);
+              const min = Math.min(r, g, b);
+              // Skip near-white / near-black / very gray pixels
+              if (max < 40 || min > 230) continue;
+              if (max - min < 18) continue;
+
+              const sat = (max - min) / Math.max(max, 1);
+              const w = 0.35 + sat;
+              rSum += r * w;
+              gSum += g * w;
+              bSum += b * w;
+              weight += w;
+            }
+
+            if (weight < 1) return;
+            const r = Math.round(rSum / weight);
+            const g = Math.round(gSum / weight);
+            const b = Math.round(bSum / weight);
+            onColor(`rgb(${r}, ${g}, ${b})`);
+          } catch (_) {
+            // CORS or canvas taint — keep default accent
+          }
+        };
+        sample.src = src;
+      } catch (_) {
+        /* ignore */
+      }
+    };
+
+    if (imgEl.complete && imgEl.naturalWidth > 0) apply();
+    else imgEl.addEventListener('load', apply, { once: true });
   }
 
   function startSlideshow(imgEl, fileNames, base, folder, startIndex) {
@@ -208,7 +328,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             decoding="async"
             onerror="this.onerror=null;this.removeAttribute('srcset');this.src='${urls.original}'" />
         </a>
-        <p class="mt-3 text-center text-sm md:text-base font-signika tracking-wide uppercase">${safeTitle}</p>
+        <div class="featured-caption-wrap">
+          <p class="featured-caption">${safeTitle}</p>
+          <span class="featured-accent" aria-hidden="true"></span>
+        </div>
       `;
       grid.appendChild(item);
 
@@ -216,6 +339,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Start slideshow only after the tile scrolls into view
       item._startSlideshow = () =>
         startSlideshow(imgEl, fileNames, base, resolvedKey, startIndex);
+      item._sampleAccent = () =>
+        sampleAccentFromImage(imgEl, (color) => {
+          item.style.setProperty('--accent', color);
+        });
     });
 
     // Reveal each row as the user scrolls — tiles feel "built" into place
@@ -227,6 +354,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!entry.isIntersecting) return;
             const el = entry.target;
             el.classList.add('is-visible');
+            if (typeof el._sampleAccent === 'function') {
+              el._sampleAccent();
+              el._sampleAccent = null;
+            }
             if (typeof el._startSlideshow === 'function') {
               el._startSlideshow();
               el._startSlideshow = null;
@@ -244,9 +375,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       revealItems.forEach((el) => {
         el.classList.add('is-visible');
+        if (typeof el._sampleAccent === 'function') el._sampleAccent();
         if (typeof el._startSlideshow === 'function') el._startSlideshow();
       });
     }
+
+    // Let the experience layer (cursor / magnetic) bind to the new tiles
+    document.dispatchEvent(new CustomEvent('home:featured-ready'));
   } catch (err) {
     console.error('Failed to populate featured grid:', err);
   }
