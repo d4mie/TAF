@@ -51,6 +51,50 @@ document.addEventListener('DOMContentLoaded', async () => {
       folder: 'AMAZON X NEMSIA PRODUCTION',
       title: 'AMAZON PRIME & NEMSIA PRODUCTION',
     },
+    {
+      folder: 'BOLAPSD BASEMENT PARTY',
+      title: 'BOLAPSD',
+    },
+    {
+      folder: "CENTRALCEE AT STREETSOUK'25 ",
+      title: 'CENCH AT STREETSOUK 25',
+    },
+    {
+      folder: 'BOARDROOM BRIDE',
+      title: 'BOARDROOM BRIDE',
+    },
+    {
+      folder: 'HERWORLD- THE EDITORIAL',
+      title: 'HERWORLD',
+    },
+    {
+      folder: 'RYTHM- THE EDITORIAL ',
+      title: 'RYTHM',
+    },
+    {
+      folder: 'PURE FORM - THE EDITORIAL',
+      title: 'PURE FORM',
+    },
+    {
+      folder: 'crazies campaign',
+      title: 'CRAZIES CAMPAIGN',
+    },
+    {
+      folder: 'STOMFIT - SERENE DAYS',
+      title: 'STOMFITS- SERENE DAYS',
+    },
+    {
+      folder: 'TINMEYIN',
+      title: 'TINMEYIN',
+    },
+    {
+      folder: 'GUNNA',
+      title: 'GUNNA',
+    },
+    {
+      folder: 'stomfit serene days - BTS',
+      title: 'STOMFITS SERENE DAYS BTS',
+    },
   ];
 
   function encodePathSegment(segment) {
