@@ -1,9 +1,14 @@
 /* Reset and base styles */
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
-  /* margin: 0; */
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+  font-family: Montserrat, system-ui, sans-serif;
 }
 
 /* Category styles */
@@ -229,17 +234,6 @@ html.dark .site-letterbox {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  .site-letterbox {
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .site-grain {
-    opacity: 0.055;
-    mix-blend-mode: soft-light;
-  }
-}
-
 .dark .site-grain,
 html.dark .site-grain {
   opacity: 0.055;
@@ -264,16 +258,6 @@ html.dark .site-grain {
     opacity: 0.045;
     background-size: 180px 180px;
     animation-duration: 0.8s;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .site-letterbox {
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .site-grain {
-      opacity: 0.07;
-    }
   }
 
   .dark .site-letterbox,
@@ -350,14 +334,14 @@ body.has-custom-cursor .site-cursor.is-active {
     border-color 0.25s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .site-cursor-dot {
-    background: #f2f2f2;
-  }
+html.dark .site-cursor-dot,
+.dark .site-cursor-dot {
+  background: #f2f2f2;
+}
 
-  .site-cursor-ring {
-    border-color: rgba(242, 242, 242, 0.5);
-  }
+html.dark .site-cursor-ring,
+.dark .site-cursor-ring {
+  border-color: rgba(242, 242, 242, 0.5);
 }
 
 body.has-custom-cursor .site-cursor.is-hover .site-cursor-dot {
@@ -397,16 +381,6 @@ html {
   );
   pointer-events: none;
   transition: padding 0.35s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .visionary-sticky {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.94) 55%,
-      rgba(0, 0, 0, 0)
-    );
-  }
 }
 
 .dark .visionary-sticky,
@@ -450,10 +424,9 @@ html.dark .visionary-sticky {
   text-indent: 0.32em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .visionary-title {
-    color: #d0d0d0;
-  }
+html.dark .visionary-title,
+.dark .visionary-title {
+  color: #d0d0d0;
 }
 
 .featured-item {
@@ -519,7 +492,7 @@ html.dark .visionary-sticky {
 
 .featured-caption {
   margin: 0;
-  font-family: Signika, sans-serif;
+  font-family: Montserrat, system-ui, sans-serif;
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -537,10 +510,9 @@ html.dark .visionary-sticky {
   text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .featured-item.is-visible .featured-caption {
-    color: color-mix(in srgb, var(--accent) 65%, #f5f5f5);
-  }
+html.dark .featured-item.is-visible .featured-caption,
+.dark .featured-item.is-visible .featured-caption {
+  color: color-mix(in srgb, var(--accent) 65%, #f5f5f5);
 }
 
 .featured-accent {
@@ -607,7 +579,7 @@ html.dark .visionary-sticky {
 
 .project-intro-title {
   margin: 0;
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: Montserrat, system-ui, sans-serif;
   font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -627,7 +599,7 @@ html.dark .visionary-sticky {
 .project-intro-caption {
   margin: 0 auto;
   max-width: 34rem;
-  font-family: Signika, sans-serif;
+  font-family: Montserrat, system-ui, sans-serif;
   font-size: clamp(0.95rem, 1.6vw, 1.05rem);
   font-weight: 300;
   line-height: 1.75;
@@ -648,10 +620,59 @@ html.dark .visionary-sticky {
   opacity: 0.7;
 }
 
-@media (prefers-color-scheme: dark) {
-  .project-intro-caption {
-    color: #d4d4d4;
-  }
+html.dark .project-intro-caption,
+.dark .project-intro-caption {
+  color: #d4d4d4;
+}
+
+/* —— Theme toggle —— */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: transparent;
+  color: inherit;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.96);
+}
+
+html.dark .theme-toggle,
+.dark .theme-toggle {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+html.dark .theme-toggle:hover,
+.dark .theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.theme-toggle-icon {
+  display: none;
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+html:not(.dark) .theme-toggle-moon {
+  display: block;
+}
+
+html.dark .theme-toggle-sun {
+  display: block;
 }
 
 @keyframes projectIntroIn {
