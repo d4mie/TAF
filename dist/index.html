@@ -10,7 +10,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="circle favicon.ico" />
   <link rel="stylesheet" href="output.css?v=20260807b" />
-  <link rel="stylesheet" href="styles.css?v=20260810h" />
+  <link rel="stylesheet" href="styles.css?v=20260811c" />
   
   <!-- Preconnect to image CDN for faster loading -->
   <link rel="preconnect" href="https://theayofolahan.com" crossorigin />
@@ -31,8 +31,19 @@
 </head>
 
 <body
-  class="dark:bg-black bg-white h-screen text-black dark:text-white px-5 md:px-20 opacity-0 animate-fade-in transition duration-500">
+  class="is-home dark:bg-black bg-white h-screen text-black dark:text-white px-5 md:px-20 opacity-0 animate-fade-in transition duration-500">
   <noscript><style>body.opacity-0{opacity:1}</style></noscript>
+
+  <!-- Lookbook frame + film grain (desktop polish) -->
+  <div class="site-letterbox" aria-hidden="true"></div>
+  <div class="site-grain" aria-hidden="true"></div>
+
+  <!-- Custom cursor (fine pointer only; JS enables) -->
+  <div class="site-cursor" id="site-cursor" aria-hidden="true">
+    <span class="site-cursor-dot"></span>
+    <span class="site-cursor-ring"></span>
+  </div>
+
   <!-- Navbar -->
   <header class="flex w-full overflow-hidden pt-10 pb-1">
     <!-- Navbar -->
@@ -93,14 +104,16 @@
   </header>
 
   <!-- Content -->
-  <div class="container mx-auto">
+  <div class="container mx-auto home-main">
     <!-- Featured Work -->
-    <div class="mt-12 mb-10">
-      <h2 class="visionary-title text-center mb-12">VISIONARY</h2>
+    <section class="featured-section mt-12 mb-10">
+      <div class="visionary-sticky" id="visionary-sticky">
+        <h2 class="visionary-title text-center" id="visionary-title">VISIONARY</h2>
+      </div>
       <div id="featured-grid" class="grid grid-cols-2 gap-4 md:gap-8 max-w-6xl mx-auto">
         <!-- Items will be populated by home-featured.js -->
       </div>
-    </div>
+    </section>
   </div>
 
    <!-- Footer -->
@@ -167,7 +180,8 @@
   </footer>
   <script src="fade_in.js?v=20260807b"></script>
   <script src="menu.js?v=20260807b"></script>
-  <script src="js/home-featured.js?v=20260810h"></script>
+  <script src="js/home-featured.js?v=20260811b"></script>
+  <script src="js/home-experience.js?v=20260811b"></script>
 </body>
 
 </html>
