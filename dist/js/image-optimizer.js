@@ -35,7 +35,7 @@ class ImageOptimizer {
 
   // Determine current site origin and custom domain
   getSiteOrigin() {
-    const hardcoded = 'https://theayofolahan.com';
+    const hardcoded = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
     try {
       const { origin } = window.location;
       // Prefer current origin if it matches the hardcoded domain
@@ -45,11 +45,13 @@ class ImageOptimizer {
     }
   }
 
-  // Convert old R2 URLs to custom domain URLs with fallback
+  // theayofolahan.com does not resolve until the domain is renewed.
+  // Keep photo requests on the public R2 URL in the meantime.
   convertToCustomDomain(url) {
-    if (url.includes('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')) {
-      const path = url.split('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')[1];
-      return `https://theayofolahan.com/${path}`;
+    const base = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
+    if (typeof url !== 'string') return url;
+    if (url.includes('theayofolahan.com/')) {
+      return `${base}/${url.split('theayofolahan.com/')[1]}`;
     }
     return url;
   }
@@ -264,7 +266,7 @@ class ImageOptimizer {
   async optimizeExistingImages() {
     // Gather all images: legacy R2 domain, same-origin absolute, and relative paths
     const legacySelector = 'img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]';
-    const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://theayofolahan.com/"]';
+    const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/"]';
     const lazySelector = 'img[data-src]';
     const images = Array.from(document.querySelectorAll(`${legacySelector}, ${sameOriginSelector}, ${lazySelector}`));
 
@@ -341,7 +343,7 @@ class ImageOptimizer {
     });
 
     // Update Fancybox gallery links (legacy R2 domain only)
-    const galleryLinks = document.querySelectorAll('a[href*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]');
+    const galleryLinks = document.querySelectorAll('a[href*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"], a[href*="theayofolahan.com"]');
     galleryLinks.forEach((link) => {
       const originalHref = link.getAttribute('href');
       const optimizedHref = this.convertToCustomDomain(originalHref);
@@ -461,7 +463,7 @@ class ImageOptimizer {
   // Add responsive image support
   addResponsiveImage(img, imagePath) {
     const basePath = imagePath.replace('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/', '');
-    const customDomain = 'https://theayofolahan.com';
+    const customDomain = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
     
     // Create srcset for different screen sizes
     const srcset = [
