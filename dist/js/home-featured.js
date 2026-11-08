@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const indexData = await indexRes.json();
     const folders = (indexData && indexData.folders) || {};
-    const base = (indexData.bucketBaseURL || 'https://theayofolahan.com').replace(/\/$/, '');
+    const base = (indexData.bucketBaseURL || 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev').replace(/\/$/, '');
 
     grid.innerHTML = '';
 
