@@ -16,8 +16,8 @@ const r2Config = {
   accessKeyId: process.env.R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || process.env.CF_R2_ACCESS_KEY_ID,
   secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || process.env.CF_R2_SECRET_ACCESS_KEY,
   bucketName: process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || process.env.CF_R2_BUCKET_NAME || process.env.AWS_S3_BUCKET || process.env.BUCKET_NAME,
-  customDomain: process.env.R2_CUSTOM_DOMAIN || 'theayofolahan.com',
-  publicUrl: process.env.R2_PUBLIC_URL || 'https://theayofolahan.com'
+  customDomain: process.env.R2_CUSTOM_DOMAIN || 'cdn.ayofolahan.com',
+  publicUrl: process.env.R2_PUBLIC_URL || 'https://cdn.ayofolahan.com'
 };
 
 // Validate required configuration up front for clearer errors
@@ -88,12 +88,19 @@ function getOptimizedImageUrl(imagePath, options = {}) {
   
   // Handle different image paths
   let cleanPath = imagePath;
-  if (imagePath.includes('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')) {
-    // Extract path from old R2 URL
-    cleanPath = imagePath.split('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/')[1];
-  } else if (imagePath.startsWith('/')) {
-    // Remove leading slash
-    cleanPath = imagePath.substring(1);
+  const knownHosts = [
+    'pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/',
+    'cdn.ayofolahan.com/',
+    'theayofolahan.com/'
+  ];
+  for (const host of knownHosts) {
+    if (cleanPath.includes(host)) {
+      cleanPath = cleanPath.split(host)[1];
+      break;
+    }
+  }
+  if (cleanPath.startsWith('/')) {
+    cleanPath = cleanPath.substring(1);
   }
 
   // For now, return the custom domain URL
@@ -103,7 +110,10 @@ function getOptimizedImageUrl(imagePath, options = {}) {
 
 // Generate responsive image URLs
 function getResponsiveImageUrls(imagePath) {
-  const basePath = imagePath.replace('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/', '');
+  const basePath = imagePath
+    .replace('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/', '')
+    .replace('cdn.ayofolahan.com/', '')
+    .replace('theayofolahan.com/', '');
   
   return {
     thumbnail: getOptimizedImageUrl(basePath, { size: 'thumbnail' }),

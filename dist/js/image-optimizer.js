@@ -33,25 +33,23 @@ class ImageOptimizer {
     this.observeNewImages();
   }
 
-  // Determine current site origin and custom domain
+  // Photos are served from the R2 custom hostname. The website stays on ayofolahan.com.
   getSiteOrigin() {
-    const hardcoded = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
-    try {
-      const { origin } = window.location;
-      // Prefer current origin if it matches the hardcoded domain
-      return origin.includes('theayofolahan.com') ? origin : hardcoded;
-    } catch {
-      return hardcoded;
-    }
+    return 'https://cdn.ayofolahan.com';
   }
 
-  // theayofolahan.com does not resolve until the domain is renewed.
-  // Keep photo requests on the public R2 URL in the meantime.
+  // Rewrite retired photo hosts onto cdn.ayofolahan.com.
   convertToCustomDomain(url) {
-    const base = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
+    const base = 'https://cdn.ayofolahan.com';
     if (typeof url !== 'string') return url;
-    if (url.includes('theayofolahan.com/')) {
-      return `${base}/${url.split('theayofolahan.com/')[1]}`;
+    const legacyHosts = [
+      'pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/',
+      'theayofolahan.com/'
+    ];
+    for (const host of legacyHosts) {
+      if (url.includes(host)) {
+        return `${base}/${url.split(host)[1]}`;
+      }
     }
     return url;
   }
@@ -161,7 +159,7 @@ class ImageOptimizer {
       const url = new URL(rawUrl, siteOrigin);
       // Only attempt variants for bucket/custom-domain images
       const origin = url.origin || '';
-      if (!origin.includes('theayofolahan.com') && !origin.includes('r2.dev')) return null;
+      if (!origin.includes('cdn.ayofolahan.com') && !origin.includes('theayofolahan.com') && !origin.includes('r2.dev')) return null;
 
       // Normalize to custom domain
       const normalized = new URL(this.convertToCustomDomain(url.toString()));
@@ -265,8 +263,8 @@ class ImageOptimizer {
   // Optimize existing images on page load
   async optimizeExistingImages() {
     // Gather all images: legacy R2 domain, same-origin absolute, and relative paths
-    const legacySelector = 'img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"]';
-    const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/"]';
+    const legacySelector = 'img[src*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"], img[src*="cdn.ayofolahan.com"], img[src*="theayofolahan.com"]';
+    const sameOriginSelector = 'img[src^="/"], img[src^="./"], img[src^="../"], img[src^="https://cdn.ayofolahan.com/"], img[src^="https://cdn.ayofolahan.com/"]';
     const lazySelector = 'img[data-src]';
     const images = Array.from(document.querySelectorAll(`${legacySelector}, ${sameOriginSelector}, ${lazySelector}`));
 
@@ -280,14 +278,15 @@ class ImageOptimizer {
 
     const hostedOnCustomDomain = (() => {
       try {
-        return window.location.origin.includes('theayofolahan.com');
+        const host = window.location.hostname;
+        return host === 'ayofolahan.com' || host === 'www.ayofolahan.com' || host.endsWith('.ayofolahan.com');
       } catch {
         return false;
       }
     })();
 
     const probeCandidate =
-      candidates.find((u) => u.includes('theayofolahan.com') || u.includes('r2.dev')) ||
+      candidates.find((u) => u.includes('cdn.ayofolahan.com') || u.includes('theayofolahan.com') || u.includes('r2.dev')) ||
       (hostedOnCustomDomain ? candidates[0] : null);
 
     // Pre-run both resize and static variant probes in parallel so they're
@@ -305,20 +304,27 @@ class ImageOptimizer {
       if (!originalSrc) return;
 
       const converted = this.convertToCustomDomain(originalSrc);
+      const reveal = () => {
+        img.style.opacity = '1';
+      };
 
-      // Always set perf attributes and fade-in
+      // Attach the fade-in listener before lazy loading starts. A cached photo
+      // can finish loading inside observe(), and a listener added after that
+      // never runs, which leaves the image at opacity 0.
+      img.style.opacity = '0';
+      img.style.transition = 'opacity 0.3s ease-in-out';
+      img.addEventListener('load', reveal);
+
       this.applyResponsiveAttributes(img);
 
-      // Convert legacy domain for both eager and lazy images
       if (img.hasAttribute('data-src')) {
         if (converted !== originalSrc) img.setAttribute('data-src', converted);
-        // Ensure we observe lazy images present at load
         if (this.observer) this.observer.observe(img);
-      } else {
-        if (converted !== originalSrc) img.setAttribute('src', converted);
+      } else if (converted !== originalSrc) {
+        img.setAttribute('src', converted);
       }
+      if (img.complete && img.naturalWidth > 0) reveal();
 
-      // Add error handling with fallback
       img.addEventListener('error', () => {
         const currentSrc = img.getAttribute('src');
         if (currentSrc && currentSrc !== originalSrc) {
@@ -328,22 +334,15 @@ class ImageOptimizer {
           img.removeAttribute('srcset');
           img.removeAttribute('sizes');
         } else {
-          // If both fail, show placeholder
           img.src =
             'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+          reveal();
         }
-      });
-
-      // Add fade-in effect
-      img.style.opacity = '0';
-      img.style.transition = 'opacity 0.3s ease-in-out';
-      img.addEventListener('load', () => {
-        img.style.opacity = '1';
       });
     });
 
     // Update Fancybox gallery links (legacy R2 domain only)
-    const galleryLinks = document.querySelectorAll('a[href*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"], a[href*="theayofolahan.com"]');
+    const galleryLinks = document.querySelectorAll('a[href*="pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev"], a[href*="cdn.ayofolahan.com"], a[href*="theayofolahan.com"]');
     galleryLinks.forEach((link) => {
       const originalHref = link.getAttribute('href');
       const optimizedHref = this.convertToCustomDomain(originalHref);
@@ -434,11 +433,12 @@ class ImageOptimizer {
             img.src = finalSrc;
             img.removeAttribute('data-src');
             img.classList.add('loaded');
+            if (img.complete && img.naturalWidth > 0) img.style.opacity = '1';
           };
           newImg.onerror = () => {
-            // Fallback to original URL
             img.src = optimizedSrc;
             img.removeAttribute('data-src');
+            if (img.complete && img.naturalWidth > 0) img.style.opacity = '1';
           };
           newImg.src = finalSrc;
         }
@@ -462,8 +462,11 @@ class ImageOptimizer {
 
   // Add responsive image support
   addResponsiveImage(img, imagePath) {
-    const basePath = imagePath.replace('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/', '');
-    const customDomain = 'https://pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev';
+    const basePath = imagePath
+      .replace('https://cdn.ayofolahan.com/', '')
+      .replace('pub-5a19e82d4f1b46b78332b0f0c5af53a2.r2.dev/', '')
+      .replace('theayofolahan.com/', '');
+    const customDomain = 'https://cdn.ayofolahan.com';
     
     // Create srcset for different screen sizes
     const srcset = [

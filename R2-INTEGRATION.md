@@ -1,10 +1,10 @@
 # Cloudflare R2 Integration with Custom Domain
 
-This project now includes a complete Cloudflare R2 integration with your custom domain `theayofolahan.com` for faster image loading and better performance.
+This project now includes a complete Cloudflare R2 integration with your custom domain `cdn.ayofolahan.com` for faster image loading and better performance.
 
 ## 🚀 Features
 
-- **Custom Domain**: All images now use `https://theayofolahan.com/` instead of the default R2 domain
+- **Custom Domain**: All images now use `https://cdn.ayofolahan.com/` instead of the default R2 domain
 - **Image Optimization**: Automatic WebP conversion and compression
 - **Lazy Loading**: Images load only when needed for better performance
 - **Responsive Images**: Support for different screen sizes
@@ -43,12 +43,12 @@ This project now includes a complete Cloudflare R2 integration with your custom 
    R2_ACCESS_KEY_ID=your_access_key_here
    R2_SECRET_ACCESS_KEY=your_secret_access_key_here
    R2_BUCKET_NAME=your_bucket_name_here
-   R2_CUSTOM_DOMAIN=theayofolahan.com
-   R2_PUBLIC_URL=https://theayofolahan.com
+   R2_CUSTOM_DOMAIN=cdn.ayofolahan.com
+   R2_PUBLIC_URL=https://cdn.ayofolahan.com
    ```
 
 3. **Verify Custom Domain Setup**:
-   - Ensure your R2 bucket has the custom domain `theayofolahan.com` configured
+   - Ensure your R2 bucket has the custom domain `cdn.ayofolahan.com` configured
    - Verify DNS settings point to your R2 bucket
 
 ## 🖼️ Uploading New Images
@@ -79,7 +79,7 @@ npm run upload:image path/to/image.jpg --folder "ACTIVEYARD" --quality 85
 ## 🎯 Performance Optimizations
 
 ### Automatic Optimizations:
-1. **Custom Domain**: Faster loading via `theayofolahan.com`
+1. **Custom Domain**: Faster loading via `cdn.ayofolahan.com`
 2. **WebP Format**: Better compression than JPEG/PNG
 3. **Lazy Loading**: Images load only when visible
 4. **Progressive Loading**: Smooth fade-in effects
@@ -117,7 +117,7 @@ npm run upload:image path/to/image.jpg --folder "ACTIVEYARD" --quality 85
 
 ### Images Not Loading:
 1. Check if custom domain is properly configured in R2
-2. Verify DNS settings for `theayofolahan.com`
+2. Verify DNS settings for `cdn.ayofolahan.com`
 3. Check browser console for errors
 4. Ensure R2 bucket allows public access
 
@@ -138,14 +138,14 @@ npm run upload:image path/to/image.jpg --folder "ACTIVEYARD" --quality 85
 ### HTML Integration:
 ```html
 <!-- Standard image -->
-<img src="https://theayofolahan.com/portfolio/image.jpg" 
+<img src="https://cdn.ayofolahan.com/portfolio/image.jpg" 
      alt="Description" 
      loading="lazy" 
      decoding="async" />
 
 <!-- Fancybox gallery -->
-<a href="https://theayofolahan.com/portfolio/image.jpg" data-fancybox="gallery">
-  <img src="https://theayofolahan.com/portfolio/image.jpg" 
+<a href="https://cdn.ayofolahan.com/portfolio/image.jpg" data-fancybox="gallery">
+  <img src="https://cdn.ayofolahan.com/portfolio/image.jpg" 
        alt="Description" 
        loading="lazy" 
        decoding="async" />
@@ -159,15 +159,15 @@ npm run upload:image path/to/image.jpg --folder "ACTIVEYARD" --quality 85
 
 // For advanced usage:
 window.imageOptimizer.preloadCriticalImages([
-  'https://theayofolahan.com/portfolio/critical1.jpg',
-  'https://theayofolahan.com/portfolio/critical2.jpg'
+  'https://cdn.ayofolahan.com/portfolio/critical1.jpg',
+  'https://cdn.ayofolahan.com/portfolio/critical2.jpg'
 ]);
 ```
 
 ## 🎉 Results
 
 Your portfolio now has:
-- ✅ Custom domain integration (`theayofolahan.com`)
+- ✅ Custom domain integration (`cdn.ayofolahan.com`)
 - ✅ Automatic image optimization
 - ✅ Lazy loading for better performance
 - ✅ Easy upload workflow

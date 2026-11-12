@@ -7,7 +7,7 @@
  * {
  *   "generatedAt": "2025-01-01T00:00:00.000Z",
  *   "bucketName": "<bucket>",
- *   "bucketBaseURL": "https://<public>.r2.dev/",
+ *   "bucketBaseURL": "https://cdn.ayofolahan.com",
  *   "folders": {
  *     "FOLDER_NAME": ["image1.jpg", "image2.png"],
  *     ...
@@ -21,7 +21,7 @@
  * - R2_BUCKET: Bucket name
  * Optional:
  * - R2_ENDPOINT: Override endpoint (defaults to https://<account>.r2.cloudflarestorage.com)
- * - R2_PUBLIC_BASE_URL: Base public URL for images (defaults to current r2.dev URL in site)
+ * - R2_PUBLIC_BASE_URL: Base public URL for images (defaults to https://cdn.ayofolahan.com)
  */
 
 const fs = require("fs");
@@ -38,7 +38,7 @@ async function main() {
   const endpoint = process.env.R2_ENDPOINT || (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : undefined);
   const accessKeyId = process.env.R2_ACCESS_KEY_ID;
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-  const bucketBaseURL = process.env.R2_PUBLIC_BASE_URL || "https://theayofolahan.com/";
+  const bucketBaseURL = process.env.R2_PUBLIC_BASE_URL || "https://cdn.ayofolahan.com";
 
   if (!bucket) {
     console.error("R2_BUCKET (or R2_BUCKET_NAME) is required");

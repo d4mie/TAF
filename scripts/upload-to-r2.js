@@ -146,16 +146,16 @@ async function optimizeAndUploadImage() {
       console.log(`🔗 Public URL: ${uploadResult.url}`);
       console.log(`📊 Processed size: ${processedSize} MB`);
       console.log(`🗜️  Compression: ${compressionRatio}% smaller`);
-      console.log(`🌐 Custom domain: https://theayofolahan.com/${key}`);
+      console.log(`🌐 Custom domain: ${uploadResult.url}`);
       
       // Generate HTML snippet
       console.log('\n📋 HTML snippet:');
-      console.log(`<img src="https://theayofolahan.com/${key}" alt="Description" loading="lazy" decoding="async" />`);
+      console.log(`<img src="${uploadResult.url}" alt="Description" loading="lazy" decoding="async" />`);
       
       // Generate Fancybox gallery snippet
       console.log('\n🖼️  Fancybox gallery snippet:');
-      console.log(`<a href="https://theayofolahan.com/${key}" data-fancybox="gallery">`);
-      console.log(`  <img src="https://theayofolahan.com/${key}" alt="Description" loading="lazy" decoding="async" />`);
+      console.log(`<a href="${uploadResult.url}" data-fancybox="gallery">`);
+      console.log(`  <img src="${uploadResult.url}" alt="Description" loading="lazy" decoding="async" />`);
       console.log(`</a>`);
       
     } else {
